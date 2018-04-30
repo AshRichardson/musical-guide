@@ -1,5 +1,6 @@
 from django.contrib import admin
 
-from .models import PreQuestionnaire
+from .models import Participant
 
-admin.site.register(PreQuestionnaire)
+admin.site.register(Participant)
+# admin.site.register(PostQuestionnaire)

@@ -3,28 +3,115 @@ from django import forms
 from django.forms.widgets import RadioSelect
 # from django.forms.extras.widgets import SelectDateWidget
 
-RATING_SCALE = ((1, 'Very bad.'), (2, 'Bad.'), (3, 'Average.'), (4, 'Good.'),
-	(5, 'Great.'))
-SCALE_TYPES = {'rating':RATING_SCALE}
-GENDER_CHOICES = (('m', 'Male'), ('f', 'Female'), ('o', 'Other'))
-AGE = ((0, 18), (1, 19), (2, 20), (3, 21), (4, 22))
-YES_NO = (('y', 'yes'), ('n', 'no'))
-EXPERTISE_CHOICES = (('0', 'Beginner'), ('1', 'Intermediate'), ('2', 'Advanced'), ('3', 'Professional'))
-HOURS_OPTIONS = ((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'), (6, '6'), (7, '7'), (8, '8'), (9, '9'), (10, '10'),
-		(11, '11'), (12, '12'), (13, '13'), (14, '14'), (15, '15'), (16, '16'), (17, '17'), (18, '18'), (19, '19'), (20, '20'), (21, '20+'))
-class PreQuestionnaireForm(forms.Form):
-	age = forms.ChoiceField(label="What is your age (in years)?", choices=AGE,
-		widget = forms.Select(attrs={'class':'selector'}))
-	gender = forms.ChoiceField(label="What is your gender?", choices=GENDER_CHOICES,
-		widget=RadioSelect())
-	playMusicalInstruments = forms.ChoiceField(label="Do you play any musical instruments? If you answer no to this question, please skip to Question 7.", choices=YES_NO,
-		widget=RadioSelect())
-	musicalInstrumentsPlayed = forms.CharField(label="Please list all musical instruments that you play, with associated number of years of experience.", widget=forms.Textarea(), required=False, max_length=500)
-	musicLiteracyLevel = forms.ChoiceField(label="How would you rank your ability to read music?", choices=EXPERTISE_CHOICES, widget=RadioSelect(), required=False)
-	hoursAWeekPracticing = forms.ChoiceField(label="How many hours per week would you say you spend practicing playing musical instruments?", required=False, choices=HOURS_OPTIONS, widget = forms.Select(attrs={'class':'selector'}))
-	hoursAWeekListening = forms.ChoiceField(label="How many hours per week would you say you spend listening to music?", choices=HOURS_OPTIONS, widget = forms.Select(attrs={'class':'selector'}))
-	preferredGenres = forms.CharField(label="What genre/s of music do you generally like to listen to?", widget=forms.Textarea(), max_length=500)
-	hoursPredictedToPlay = forms.CharField(label="If you could play music with a computer, how long do you think this would entertain you for (i.e. how long do you think you would continue playing before getting bored)?", widget=forms.Textarea(), max_length=500)
+# Choice options
+RATING_CHOICES = [('1', '1 (not enjoyable at all)'), ('2', '2'), ('3', '3'), ('4', '4'),
+	('5', '5 (very enjoyable)')]
+GENDER_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
+AGE = [(0, 18), (1, 19), (2, 20), (3, 21), (4, 22)] # Needs more ages; TODO
+YES_NO = [('y', 'yes'), ('n', 'no')]
+EXPERTISE_CHOICES = [('0', 'Beginner'), ('1', 'Intermediate'),
+	('2', 'Advanced'), ('3', 'Professional')]
+HOURS_OPTIONS = [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'),
+	(6, '6'), (7, '7'), (8, '8'), (9, '9'), (10, '10'), (11, '11'), (12, '12'),
+	(13, '13'), (14, '14'), (15, '15'), (16, '16'), (17, '17'), (18, '18'),
+	(19, '19'), (20, '20'), (21, '21+')]
 
-class PreQuestionnaire(models.Model):
-	form = PreQuestionnaireForm
+# Pre-survey questionnaire questions
+AGE_QUESTION = 'What is your age (in years)?'
+GENDER_QUESTION = 'What is your gender?'
+PLAYS_QUESTION = 'Do you play any musical instruments? If you answer no to' + \
+	' this question, please skip to Question 7.'
+LIST_INSTRUMENTS_QUESTION = 'Please list all musical instruments that you ' + \
+	'play, with associated number of years of experience.'
+ABILITY_QUESTION = 'How would you rank your ability to read music?'
+HOURS_PRACTICED = 'How many hours per week would you say you spend ' + \
+	'practicing playing musical instruments?'
+HOURS_LISTENED = 'How many hours per week would you say you spend ' + \
+	'listening to music?'
+GENRES_QUESTION = 'What genre/s of music do you generally like to listen to?'
+PREDICTED_PLAYING_TIME = 'If you could play music with a computer, how long do ' + \
+	'you think this would entertain you for (i.e. how long do you think ' + \
+	'you would continue playing before getting bored)? Please specify units.'
+
+# Questions for the post-study questionnaire
+ESTIMATED_TIME = 'How long do you think you spent playing music with this system?'
+SYSTEM_RATING = "How enjoyable would you rate your experience playing music with this system to be?"
+PLAY_AGAIN = "If given the chance, would you play music with this system again?"
+SYSTEM_IMPRESSION = "What did you think about this system’s responses to your music?"
+SYSTEM_GOOD = "What (if anything) did you like about playing music with this system?"
+SYSTEM_BAD = "What (if anything) did you not like about playing music with this system?"
+SYSTEM_SUGGESTIONS = "What sorts of things would you like to see an interactive music AI doing, that you did not in this system?"
+
+class Participant(models.Model):
+	# Use auto-incremented id as participant id
+	# participant_id = models.AutoField(primary_key=True)
+
+	# Data collected from pre-study questionnaire
+	age = models.IntegerField(default=0)
+	gender = models.CharField(max_length=6, choices=GENDER_CHOICES, default='o')
+	plays_instruments=models.CharField(choices=YES_NO, max_length=3, default='')
+	instrument_list=models.CharField(max_length=500, default='')
+	ability = models.CharField(choices=EXPERTISE_CHOICES, max_length=1, default='')
+	hours_practiced_per_week = models.IntegerField(default=0)
+	hours_listening_per_week = models.IntegerField(default=0)
+	preferred_genres = models.CharField(max_length=500, default='')
+	predicted_playing_time = models.CharField(max_length=100, default='')
+
+	# Data collected from post-study questionnaire
+	first_system_estimated_time = models.CharField(max_length=100, default='')
+	first_system_rating = models.CharField(max_length=2, choices=RATING_CHOICES, default='')
+	first_system_play_again = models.CharField(max_length=3, choices=YES_NO, default='')
+	first_system_impression = models.CharField(max_length=500, default='')
+	first_system_good = models.CharField(max_length=500, default='')
+	first_system_bad = models.CharField(max_length=500, default='')
+	first_system_suggestions = models.CharField(max_length=500, default='')
+
+
+class PreQuestionnaireForm(forms.ModelForm):
+	class Meta:
+		model = Participant
+		fields = ['age', 'gender', 'plays_instruments', 'instrument_list', 
+			'ability', 'hours_practiced_per_week', 'hours_listening_per_week',
+			'preferred_genres', 'predicted_playing_time']
+		labels = {'age':AGE_QUESTION, 'gender':GENDER_QUESTION,
+			'plays_instruments':PLAYS_QUESTION,
+			'instrument_list':LIST_INSTRUMENTS_QUESTION,
+			'ability':ABILITY_QUESTION,
+			'hours_practiced_per_week':HOURS_PRACTICED,
+			'hours_listening_per_week':HOURS_LISTENED,
+			'preferred_genres':GENRES_QUESTION,
+			'predicted_playing_time':PREDICTED_PLAYING_TIME}
+		widgets = {'plays_instruments': forms.RadioSelect,
+			'instrument_list': forms.Textarea(attrs={'width':"100%"}),
+			'ability': forms.RadioSelect,
+			'preferred_genres': forms.Textarea(attrs={'width':"100%"}),
+			'predicted_playing_time': forms.Textarea(attrs={'width':"100%"})}
+
+class PostQuestionnaireForm(forms.ModelForm):
+	class Meta:
+		model = Participant
+		fields = ['first_system_estimated_time', 
+			'first_system_rating',
+			'first_system_play_again',
+			'first_system_impression',
+			'first_system_good', 'first_system_bad',
+			'first_system_suggestions',
+			]
+		labels = {'first_system_estimated_time':ESTIMATED_TIME,
+			'first_system_rating':SYSTEM_RATING,
+			'first_system_play_again':PLAY_AGAIN,
+			'first_system_impression':SYSTEM_IMPRESSION,
+			'first_system_good':SYSTEM_GOOD,
+			'first_system_bad':SYSTEM_BAD,
+			'first_system_suggestions':SYSTEM_SUGGESTIONS,
+		}
+		widgets = {'first_system_estimated_time': forms.Textarea(attrs={'width':"100%"}),
+			'first_system_rating': RadioSelect,
+			'first_system_play_again': RadioSelect,
+			'first_system_impression': forms.Textarea(attrs={'width':"100%"}),
+			'first_system_good':forms.Textarea(attrs={'width':"100%"}),
+			'first_system_bad':forms.Textarea(attrs={'width':"100%"}),
+			'first_system_suggestions':forms.Textarea(attrs={'width':"100%"})
+			}
+
+

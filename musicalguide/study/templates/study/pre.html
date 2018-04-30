@@ -1,17 +1,6 @@
 <h1>Pre-Study Questionnaire</h1>
-<form method="post" novalidate>
+<form action="{% url 'study:submitted_pre' %}" method="post" novalidate>
   {% csrf_token %}
-  {{ questionnaire.form.as_ul }}
-  <button type="submit">Submit</button>
+  {{ form.as_p }}
+  <button type="submit" value="Submit">Submit</button>
 </form>
-
-<!-- <form action="/pre-data/" method="post">
-	<label for="questionnaire.form.age">Age: </label>
-	<input id="questionnaire.form.age"
-	<label for="questionnaire.form.your_name">Your name: </label>
-	<input id="questionnaire.form.your_name" type="text" name="questionnaire.form.your_name" value="{{ current_name }}">
-	<input type="submit" value="OK">
-</form> -->
-<!-- <ol>
-	<li><input type='radio' name='gender' id="{{ questionnaire.gender.0 }}" value="{{ questionnaire.gender.1 }}"></li>
-</ol> -->

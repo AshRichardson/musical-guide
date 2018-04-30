@@ -1,0 +1,8 @@
+<h1>Post-Study Questionnaire</h1>
+<form action="{% url 'study:submitted_post' %}" method="post" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  {{ form.errors }}
+  {{ form.non_field_errors }}
+  <button type="submit" value="Submit">Submit</button>
+</form>
