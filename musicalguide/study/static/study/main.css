@@ -1,0 +1,213 @@
+h1 {
+	font-family: "Helvetica";
+	font-size: 36px;
+	color: #222;
+}
+
+p {
+	font-size: 18px;
+	font-family: "Helvetica";
+	color: #333;
+}
+
+html, body {
+	text-align: justify-all;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+#container {
+	position: relative;
+	min-height: 100%;
+}
+
+.navbar {
+	border-radius: 0;
+	margin-bottom: 0px;
+}
+
+.navbar .navbar-nav {
+	display: inline-block;
+	float: none;
+	vertical-align: top;
+}
+
+.navbar .navbar-collapse {
+	text-align: justify-all;
+}
+
+.navbar-nav li{
+	padding-left: 35px;
+	padding-right: 35px;
+}
+
+body {
+    text-align: justify-all;
+}
+
+.content-container {
+	float: justify-all;
+	color: #666;
+	font-size: 13pt;
+	width: 34%;
+}
+
+.navbar-brand {
+	font-family: "Garamond";
+	font-size: 28px;
+}
+
+#body {
+	padding: 10px;
+	padding-bottom: 50px;
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background-color: #DDD;
+	height: 40px;
+	margin: 0 auto;
+	border-radius: 0;
+}	
+
+.footer-nav {
+	display: inline-block;
+	vertical-align: top;
+	padding-top: 11px;
+}
+
+.footer-nav a {
+	font-family: "Helvetica";
+	font-size: 14px;
+	color: #666;
+	text-decoration: none;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+.footer-nav a:hover {
+	color: #999;
+}
+
+.post-preview {
+	text-decoration: none;
+	width:100%;
+	text-align: left;
+/*	text-indent: 10%;*/
+	float: justify-all;
+}
+
+.post-preview:hover {
+	text-decoration: none;
+}
+
+.post-preview-outer {
+	border-bottom: 1px solid #AAA;
+	width: 90%;
+	display: inline-block;
+}
+
+.post-preview h2 {
+	font-family: "Helvetica";
+	font-size: 24px;
+	color: #444;
+}
+
+.post-preview p {
+	font-family: "Helvetica";
+	font-size: 16px;
+	color: #999;
+}
+
+.post-title {
+	font-family: "Helvetica";
+	font-size: 36px;
+	color: #333;
+	padding-bottom: 20px;	
+	padding-top: 10px;
+}
+
+.main-body-paragraph {
+	font-family: "Helvetica";
+	font-size: 18px;
+	color: #666;
+	width: 95%;
+	display: inline-block;
+	text-align: justify;
+}
+
+.section-title {
+	font-family: "Helvetica";
+	font-size: 28px;
+	color: #333;
+	text-align: left;
+	display: inline-block;
+	width: 95%;
+}
+
+.subsection-title {
+	font-family: : "Helvetica";
+	font-size: 22px;
+	color: #555;
+	text-align: left;
+	display: inline-block;
+	width: 95%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.code-snippet {
+	font-family: "Courier";
+	text-align: left;
+	display: inline-block;
+	font-size: 16px;
+}
+
+ul {
+	list-style-type: square;
+	font-family: "Helvetica";
+	font-size: 18px;
+	color: #666;
+	width: 95%;
+	display: inline-block;
+	text-align: justify;
+}
+
+ol {
+	font-family: "Helvetica";
+	font-size: 18px;
+	color: #444;
+	width: 95%;
+	display: inline-block;
+	text-align: justify;	
+}
+
+.in-post-image {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.code-block {
+/*	width: 800px;*/
+	width: 95%;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.instruction {
+	font-family: : "Helvetica";
+	font-size: 24px;
+	color: #333;
+	text-align: left;
+	display: inline-block;
+	width: 95%;
+	padding-top: 5px;
+	padding-bottom: 5px;	
+}
