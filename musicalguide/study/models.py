@@ -15,6 +15,8 @@ HOURS_OPTIONS = [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'),
 	(6, '6'), (7, '7'), (8, '8'), (9, '9'), (10, '10'), (11, '11'), (12, '12'),
 	(13, '13'), (14, '14'), (15, '15'), (16, '16'), (17, '17'), (18, '18'),
 	(19, '19'), (20, '20'), (21, '21+')]
+SYSTEMS_CHOICES = [('0', 'First system'), ('1', 'Second system')]
+COMPARISON_CHOICES = [('1', '1 (much worse)'), ('2', '2 (a bit worse)'), ('3', '3 (about the same'), ('4', '4 (a bit better)'), ('5', '5 (much better)')]
 
 # Pre-survey questionnaire questions
 AGE_QUESTION = 'What is your age (in years)?'
@@ -41,6 +43,10 @@ SYSTEM_IMPRESSION = "What did you think about this system’s responses to your 
 SYSTEM_GOOD = "What (if anything) did you like about playing music with this system?"
 SYSTEM_BAD = "What (if anything) did you not like about playing music with this system?"
 SYSTEM_SUGGESTIONS = "What sorts of things would you like to see an interactive music AI doing, that you did not in this system?"
+SYSTEM_PREFERRED = "Which system did you prefer playing with (the first or the second)?"
+WHY_SYSTEM_PREFERRED = "Why did you prefer playing with this system?"
+COMPARED_TO_SELF = "How would you rate playing music with this system, compared to playing music by yourself? If you do not play music by yourself, please leave this question blank."
+COMPARED_TO_FRIENDS = "How would you rate playing music with this system, compared to playing music with a friend or family member? If you do not play music with a friend or family member, please leave this question blank."
 
 class Participant(models.Model):
 	# Use auto-incremented id as participant id
@@ -65,7 +71,21 @@ class Participant(models.Model):
 	first_system_good = models.CharField(max_length=500, default='')
 	first_system_bad = models.CharField(max_length=500, default='')
 	first_system_suggestions = models.CharField(max_length=500, default='')
+	first_compared_to_self = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
+	first_compared_to_friends = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
 
+	second_system_estimated_time = models.CharField(max_length=100, default='')
+	second_system_rating = models.CharField(max_length=2, choices=RATING_CHOICES, default='')
+	second_system_play_again = models.CharField(max_length=3, choices=YES_NO, default='')
+	second_system_impression = models.CharField(max_length=500, default='')
+	second_system_good = models.CharField(max_length=500, default='')
+	second_system_bad = models.CharField(max_length=500, default='')
+	second_system_suggestions = models.CharField(max_length=500, default='')
+	second_compared_to_self = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
+	second_compared_to_friends = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
+
+	system_preferred = models.CharField(max_length=2, default='', choices=SYSTEMS_CHOICES)
+	why_system_preferred = models.CharField(max_length=500, default='')
 
 class PreQuestionnaireForm(forms.ModelForm):
 	class Meta:
@@ -96,7 +116,19 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'first_system_impression',
 			'first_system_good', 'first_system_bad',
 			'first_system_suggestions',
-			]
+			'first_compared_to_self',
+			'first_compared_to_friends',
+			'second_system_estimated_time', 
+			'second_system_rating',
+			'second_system_play_again',
+			'second_system_impression',
+			'second_system_good', 'second_system_bad',
+			'second_system_suggestions',
+			'second_compared_to_self',
+			'second_compared_to_friends',
+			'system_preferred',
+			'why_system_preferred',
+		]
 		labels = {'first_system_estimated_time':ESTIMATED_TIME,
 			'first_system_rating':SYSTEM_RATING,
 			'first_system_play_again':PLAY_AGAIN,
@@ -104,6 +136,19 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'first_system_good':SYSTEM_GOOD,
 			'first_system_bad':SYSTEM_BAD,
 			'first_system_suggestions':SYSTEM_SUGGESTIONS,
+			'first_compared_to_self':COMPARED_TO_SELF,
+			'first_compared_to_friends':COMPARED_TO_FRIENDS,
+			'second_system_estimated_time':ESTIMATED_TIME,
+			'second_system_rating':SYSTEM_RATING,
+			'second_system_play_again':PLAY_AGAIN,
+			'second_system_impression':SYSTEM_IMPRESSION,
+			'second_system_good':SYSTEM_GOOD,
+			'second_system_bad':SYSTEM_BAD,
+			'second_compared_to_self':COMPARED_TO_SELF,
+			'second_compared_to_friends':COMPARED_TO_FRIENDS,
+			'second_system_suggestions':SYSTEM_SUGGESTIONS,
+			'system_preferred':SYSTEM_PREFERRED,
+			'why_system_preferred':WHY_SYSTEM_PREFERRED,
 		}
 		widgets = {'first_system_estimated_time': forms.Textarea(attrs={'width':"100%"}),
 			'first_system_rating': RadioSelect,
@@ -111,7 +156,20 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'first_system_impression': forms.Textarea(attrs={'width':"100%"}),
 			'first_system_good':forms.Textarea(attrs={'width':"100%"}),
 			'first_system_bad':forms.Textarea(attrs={'width':"100%"}),
-			'first_system_suggestions':forms.Textarea(attrs={'width':"100%"})
-			}
+			'first_system_suggestions':forms.Textarea(attrs={'width':"100%"}),
+			'first_compared_to_self': RadioSelect,
+			'first_compared_to_friends': RadioSelect,
+			'second_system_estimated_time': forms.Textarea(attrs={'width':"100%"}),
+			'second_system_rating': RadioSelect,
+			'second_system_play_again': RadioSelect,
+			'second_system_impression': forms.Textarea(attrs={'width':"100%"}),
+			'second_system_good':forms.Textarea(attrs={'width':"100%"}),
+			'second_system_bad':forms.Textarea(attrs={'width':"100%"}),
+			'second_system_suggestions':forms.Textarea(attrs={'width':"100%"}),
+			'second_compared_to_self': RadioSelect,
+			'second_compared_to_friends': RadioSelect,
+			'system_preferred': RadioSelect,
+			'why_system_preferred': forms.Textarea(attrs={'width':'100%'})
+		}
 
 

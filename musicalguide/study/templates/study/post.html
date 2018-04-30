@@ -1,8 +1,14 @@
 <h1>Post-Study Questionnaire</h1>
 <form action="{% url 'study:submitted_post' %}" method="post" novalidate>
   {% csrf_token %}
-  {{ form.as_p }}
-  {{ form.errors }}
-  {{ form.non_field_errors }}
+  <h3>Questions 1 - 9 relate to the first interaction you had.</h3>
+  {% for field in form %}
+  {% if forloop.counter == 10 %}
+  <h3>Questions 10 - 18 relate to the second interaction you had.</h3>
+  {% elif forloop.counter == 19 %}
+  <h3>Questions 19 - 21 relate to your overall view of the AI after both interactions.</h3>
+  {% endif %}
+  <p>{{  field.label_tag  }} {{  field  }}</p>
+  {% endfor %}
   <button type="submit" value="Submit">Submit</button>
 </form>
