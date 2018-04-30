@@ -1,32 +1,17 @@
 <h1>Pre-Study Questionnaire</h1>
-{% if question_list %}
-	<ol>
-	{% for question in question_list %}
-		<li>{{ question.question_text }}
-		{% if question.questionType == 'integer' %}
-		<input type="text" name="age">
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ questionnaire.form.as_ul }}
+  <button type="submit">Submit</button>
+</form>
 
-		{% elif question.questionType == 'gender' %}
-		<p>gender question</p>
-		<ul>
-		{% for choice in question.answer.field.choices %}
-			<li>
-				<p>choice {{ choice.1 }}</p>
-				<input type="radio" name="answer" value="{{choice.0}}"
-					{% ifequal question.answer.data choice.0 %}
-						checked = "checked"
-				{% endifequal %}/>
-			<label for="">{{choice.1}}</label>
-		</li>
-		{% endfor %}
-		</ul>
-		{% endif %}
-
-		</li>
-
-	{% endfor %}
-	</ol>
-	<input type="submit" value="Submit">
-{% else %}
-	<p>No questions are available.</p>
-{% endif %}
+<!-- <form action="/pre-data/" method="post">
+	<label for="questionnaire.form.age">Age: </label>
+	<input id="questionnaire.form.age"
+	<label for="questionnaire.form.your_name">Your name: </label>
+	<input id="questionnaire.form.your_name" type="text" name="questionnaire.form.your_name" value="{{ current_name }}">
+	<input type="submit" value="OK">
+</form> -->
+<!-- <ol>
+	<li><input type='radio' name='gender' id="{{ questionnaire.gender.0 }}" value="{{ questionnaire.gender.1 }}"></li>
+</ol> -->
