@@ -21,9 +21,12 @@ class Question(models.Model):
 		answer = forms.TextInput()
 	elif questionType == 'scale':
 		# At the moment, hardcoding a RATING_SCALE
+		# scale = model.CharField
 		answer = forms.ChoiceField(RATING_SCALE)
 	elif questionType == 'integer':
 		answer = forms.IntegerField()
+	elif questionType == 'gender':
+		answer = forms.ChoiceField(choices=((1, 'Female'), (2, 'Male'), (3, 'Other')))
 
 	def __str__(self):
 		return self.question_text
