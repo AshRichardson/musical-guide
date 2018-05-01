@@ -52,7 +52,7 @@ def condition_two(request):
 
 def submitted_post(request):
 	if request.method == 'POST':
-		form = PostQuestionnaireForm(request.POST)
+		form = PostQuestionnaireForm(request.POST, instance=Participant.objects.all().get(pk=request.session.get('identifier')))
 		print(form.is_valid())
 		if form.is_valid():
 			data = form.save()

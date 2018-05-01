@@ -1,5 +1,53 @@
-<h1>Interaction Placeholder for Participant Number {{ participant_id }} for Condition 1 (Magenta model) </h1>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'study/css/main.css' %}" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'study/js/main.js' %}"></script>
 
-<form action = "{% url 'study:instructions_two' %}">
-	<input type="submit" value="Done" />
-</form>
+<h1 class='post-title'>Interaction 1 for Participant Number {{ participant_id }} (Magenta model) </h1>
+
+<div class='piano-containter'>
+	<div class='piano'>
+		<div class='piano-white C3'></div>
+		<div class='piano-black Csharp3'></div>
+		<div class='piano-white D3'></div>
+		<div class='piano-black Dsharp3'></div>
+		<div class='piano-white E3'></div>
+		<div class='piano-white F3'></div>
+		<div class='piano-black Fsharp3'></div>
+		<div class='piano-white G3'></div>
+		<div class='piano-black Gsharp3'></div>
+		<div class='piano-white A4'></div>
+		<div class='piano-black Asharp4'></div>
+		<div class='piano-white B4'></div>
+		<div class='piano-white C4'></div>
+		<div class='piano-black Csharp4'></div>
+		<div class='piano-white D4'></div>
+		<div class='piano-black Dsharp4'></div>
+		<div class='piano-white E4'></div>
+		<div class='piano-white F4'></div>
+		<div class='piano-black Fsharp4'></div>
+		<div class='piano-white G4'></div>
+		<div class='piano-black Gsharp4'></div>
+		<div class='piano-white A5'></div>
+		<div class='piano-black Asharp5'></div>
+		<div class='piano-white B5'></div>
+		<div class='piano-white C5'></div>
+		<div class='piano-black Csharp5'></div>
+		<div class='piano-white D5'></div>
+		<div class='piano-black Dsharp5'></div>
+		<div class='piano-white E5'></div>
+		<div class='piano-white F5'></div>
+		<div class='piano-black Fsharp5'></div>
+		<div class='piano-white G5'></div>
+		<div class='piano-black Gsharp5'></div>
+		<div class='piano-white A6'></div>
+		<div class='piano-black Asharp6'></div>
+		<div class='piano-white B6'></div>
+	</div>
+</div>
+
+<div class='submit-button'>
+	<form action = "{% url 'study:instructions_two' %}">
+		<input type="submit" value="Done" />
+	</form>
+</div>

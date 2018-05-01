@@ -1,6 +1,18 @@
-<h1>Pre-Study Questionnaire</h1>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'study/css/main.css' %}" />
+
+<div id='container'>
+<h1 class="post-title">Pre-Study Questionnaire</h1>
+</div>
+<div id='body'>
+<p class='main_body_paragraph'>Please answer the questions below. When you are done, please select 'Submit' to move to the next part of the study.</p>
 <form action="{% url 'study:submitted_pre' %}" method="post" novalidate>
+<fieldset class="inlineLabels">
   {% csrf_token %}
-  {{ form.as_p }}
+  {% for field in form %}
+  	<p>{{  field.label_tag  }}<br />{{  field  }}</p>
+  {% endfor %}
   <button type="submit" value="Submit">Submit</button>
+  </fieldset>
 </form>
+</div>

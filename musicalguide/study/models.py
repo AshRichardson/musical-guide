@@ -8,7 +8,7 @@ RATING_CHOICES = [('1', '1 (not enjoyable at all)'), ('2', '2'), ('3', '3'), ('4
 	('5', '5 (very enjoyable)')]
 GENDER_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
 AGE = [(0, 18), (1, 19), (2, 20), (3, 21), (4, 22)] # Needs more ages; TODO
-YES_NO = [('y', 'yes'), ('n', 'no')]
+YES_NO = [('y', 'Yes'), ('n', 'No')]
 EXPERTISE_CHOICES = [('0', 'Beginner'), ('1', 'Intermediate'),
 	('2', 'Advanced'), ('3', 'Professional')]
 HOURS_OPTIONS = [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'),

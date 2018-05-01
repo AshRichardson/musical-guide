@@ -19,7 +19,8 @@ html, body {
 
 #container {
 	position: relative;
-	min-height: 100%;
+	text-align: center;
+/*	min-height: 100%;*/
 }
 
 .navbar {
@@ -125,9 +126,10 @@ body {
 .post-title {
 	font-family: "Helvetica";
 	font-size: 36px;
-	color: #333;
+	color: #999999;
 	padding-bottom: 20px;	
-	padding-top: 10px;
+	padding-top: 20px;
+	background-color: #222222;
 }
 
 .main-body-paragraph {
@@ -210,4 +212,58 @@ ol {
 	width: 95%;
 	padding-top: 5px;
 	padding-bottom: 5px;	
+}
+
+fieldset.inlineLabels ul {list-style:none}
+
+
+.piano-container {
+	margin: 0;
+    max-width: 100%;
+    position: relative;
+    margin-left: auto;
+    margin-right:auto;
+    display: block;
+    background-color: black;
+}
+
+.piano {
+	margin: 0;
+    max-width: 90%;
+    position: relative;
+    margin-left: auto;
+    margin-right:auto;
+    display: block;
+    background-color: black;	
+}
+
+.piano-white, .piano-black {
+	box-sizing: border-box;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    float: left;
+}
+
+.piano-white {
+    height: 20em;
+    width: 3.75em;
+    z-index: 1;
+    border: 1px solid #bbb;
+    background: white;
+}
+
+.piano-black {
+    height: 12em;
+    width: 2.5em;
+    margin: 0 -2.3em 0 -1.2em;
+    z-index: 2;
+    border: 1px solid #000;
+    background: black;
+}
+
+.submit-button {
+	position:fixed;
+	bottom:0px;
+	right:10px;
 }
