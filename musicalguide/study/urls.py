@@ -18,4 +18,8 @@ urlpatterns = [
 	path('submitted_post/', views.submitted_post, name='submitted_post'),
 	path('thank_you/', views.thank_you, name='thank_you'),
 	path('debug/', views.debug, name='debug'),
+	path('condition_one/gen/', views.cond_one_response),
+	path('condition_one/off/', views.cond_one_off),
+	path('condition_two/magenta_gen/', views.cond_two_response),
+	path('condition_two/off/', views.cond_two_off),
 ]
