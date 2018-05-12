@@ -1,5 +1,14 @@
-<p>Thanks for completing the pre-study questionnaire <br />
-Next you will be taken to a screen containing an interacting piano. Play on the piano by using your mouse (or clicking on a trackpad). An AI will play along with you. When you've had enough, press the 'next' button.<br />
-<form action = "{% url 'study:instructions_one_ok' %}">
-	<input type="submit" value="Got it!" />
-</form>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'study/css/main.css' %}" />
+
+<div id='container'>
+	<h1 class='post-title'> Instructions for Interaction One </h1>
+</div>
+<p class='instruction-block'>Thanks for completing the pre-study questionnaire. Your answers have been recorded. <br />
+When you press the 'Next' button in the lower right corner, you will be taken to a screen containing an interactive piano. Play on the piano using your mouse/trackpad, or using the keys on the keyboard. An AI will play along with you. When you've had enough, press the 'Next' button.<br />
+
+<div class='submit-button'>
+	<form action = "{% url 'study:instructions_one_ok' %}">
+		<input type="submit" value="Next" />
+	</form>
+</div>

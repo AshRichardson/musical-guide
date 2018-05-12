@@ -2,6 +2,8 @@ h1 {
 	font-family: "Helvetica";
 	font-size: 36px;
 	color: #222;
+	padding-left:20px;
+	padding-right:20px;
 }
 
 p {
@@ -62,6 +64,11 @@ body {
 #body {
 	padding: 10px;
 	padding-bottom: 50px;
+	padding-left:80px;
+	padding-right:80px;
+	text-align: justify;
+/*	max-width:50%;*/
+/*	width:80%;*/
 }
 
 .footer {
@@ -266,4 +273,10 @@ fieldset.inlineLabels ul {list-style:none}
 	position:fixed;
 	bottom:0px;
 	right:10px;
+}
+
+.instruction-block {
+	padding-left: 50px;
+	padding-right: 50px;
+	text-align: justify;
 }
