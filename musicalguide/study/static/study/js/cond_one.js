@@ -1,56 +1,32 @@
-var whiteKeys = [
+const whiteKeys = [
 	'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'E4', 'F4', 'G4', 'A5', 'B5', 'C5', 'D5', 'E5', 'F5', 'G5', 'A6', 'B6'
 ];
 
-var blackKeys = [
+const blackKeys = [
 	'Cs3', 'Ds3', 'Fs3', 'Gs3', 'As4', 'Cs4', 'Ds4', 'Fs4', 'Gs4', 'As5', 'Cs5', 'Ds5', 'Fs5', 'Gs5', 'As6'
 ];
 
-var audioPath = '../../static/study/audio/';
+const audioPath = '../../static/study/audio/';
 
-var c3Audio = new Audio(audioPath + 'C3.mp3');
-var d3Audio = new Audio(audioPath + 'D3.mp3');
-var e3Audio = new Audio(audioPath + 'E3.mp3');
-var f3Audio = new Audio(audioPath + 'F3.mp3');
-var g3Audio = new Audio(audioPath + 'G3.mp3');
-var a4Audio = new Audio(audioPath + 'A4.mp3');
-var b4Audio = new Audio(audioPath + 'B4.mp3');
-var c4Audio = new Audio(audioPath + 'C4.mp3');
-var d4Audio = new Audio(audioPath + 'D4.mp3');
-var e4Audio = new Audio(audioPath + 'E4.mp3');
-var f4Audio = new Audio(audioPath + 'F4.mp3');
-var g4Audio = new Audio(audioPath + 'G4.mp3');
-var a5Audio = new Audio(audioPath + 'A5.mp3');
-var b5Audio = new Audio(audioPath + 'B5.mp3');
-var c5Audio = new Audio(audioPath + 'C5.mp3');
-var d5Audio = new Audio(audioPath + 'D5.mp3');
-var e5Audio = new Audio(audioPath + 'E5.mp3');
-var f5Audio = new Audio(audioPath + 'F5.mp3');
-var g5Audio = new Audio(audioPath + 'G5.mp3');
-var a6Audio = new Audio(audioPath + 'A6.mp3');
-var b6Audio = new Audio(audioPath + 'B6.mp3');
+var whiteNoteAudios = [];
+for (var i = 0; i < whiteKeys.length; i++) {
+	whiteNoteAudios.push(new Audio(audioPath + whiteKeys[i] + '.mp3'));
+}
 
-var whiteNoteAudios = [c3Audio, d3Audio, e3Audio, f3Audio, g3Audio, a4Audio, b4Audio, c4Audio, d4Audio, e4Audio, f4Audio, g4Audio, a5Audio, b5Audio, c5Audio, d5Audio, e5Audio, f5Audio, g5Audio, a6Audio, b6Audio];
+var blackNoteAudios = [];
+for (var i = 0; i < blackKeys.length; i++) {
+	blackNoteAudios.push(new Audio(audioPath + blackKeys[i] + '.mp3'));
+}
 
-var cs3Audio = new Audio(audioPath + 'Cs3.mp3');
-var ds3Audio = new Audio(audioPath + 'Ds3.mp3');
-var fs3Audio = new Audio(audioPath + 'Fs3.mp3');
-var gs3Audio = new Audio(audioPath + 'Gs3.mp3');
-var as4Audio = new Audio(audioPath + 'As4.mp3');
-var cs4Audio = new Audio(audioPath + 'Cs4.mp3');
-var ds4Audio = new Audio(audioPath + 'Ds4.mp3');
-var fs4Audio = new Audio(audioPath + 'Fs4.mp3');
-var gs4Audio = new Audio(audioPath + 'Gs4.mp3');
-var as5Audio = new Audio(audioPath + 'As5.mp3');
-var cs5Audio = new Audio(audioPath + 'Cs5.mp3');
-var ds5Audio = new Audio(audioPath + 'Ds5.mp3');
-var fs5Audio = new Audio(audioPath + 'Fs5.mp3');
-var gs5Audio = new Audio(audioPath + 'Gs5.mp3');
-var as6Audio = new Audio(audioPath + 'As6.mp3');
-
-var blackNoteAudios = [cs3Audio, ds3Audio, fs3Audio, gs3Audio, as4Audio, cs4Audio, ds4Audio, fs4Audio, gs4Audio, as5Audio, cs5Audio, ds5Audio, fs5Audio, gs5Audio, as6Audio];
+const allKeyArray = whiteKeys.concat(blackKeys);
 
 var mouseDown = 0;
+var d = new Date();
+var originalStartTime = d.getTime();
+var thisNoteStart = 0;
+var endTime = 0;
+
+var octaveNum = 4;
 
 function generate_note(path, params) {
 	var form = $('<form></form>');
@@ -67,7 +43,97 @@ function generate_note(path, params) {
 	form.submit();
 }
 
+function ai_response(keyColour) {
+	const keyArray = keyColour == 'white' ? whiteKeys : blackKeys;
+	const audioArray = keyColour == 'white' ? whiteNoteAudios : blackNoteAudios;
+	$.ajax({
+		url: 'gen/',
+		method: 'POST',
+		dataType:'json',
+		data: {
+			'note': keyArray[i],
+		},
+		success: function(msg) {
+			console.log(msg);
+			$.each(msg, function(key, val) {
+				const noteName = val;
+				const noteStart = 2000;
+				// HARD-CODED DURATION; TODO
+				const noteDuration = 500;
+				let keyIndex = 0;
+				for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
+					let thisIndex = keyIndex;
+					if(allKeyArray[thisIndex] == noteName) {
+						setTimeout(function() {
+							if (thisIndex > 20) {
+								thisIndex -= 21;
+							}
+							audioArray[thisIndex].play()
+							let element = document.querySelectorAll('div.'.concat(noteName))[0];
+							element.style.backgroundColor = 'yellow';
+							setTimeout(function() {							
+								if ($(element).hasClass('piano-white')) {
+									element.style.backgroundColor = 'white';
+									whiteNoteAudios[thisIndex].pause();
+									whiteNoteAudios[thisIndex].currentTime = 0;	
+								} else {
+									element.style.backgroundColor = 'black';
+									blackNoteAudios[thisIndex].pause();
+									blackNoteAudios[thisIndex].currentTime = 0;	
+								}
+							}, noteDuration);								
+						}, noteStart);
+					}
+				}
+			})
+		}
+	});
+}
+
+function note_on(noteDiv) {
+	const keyArray = $(noteDiv).hasClass('piano-white') ? whiteKeys : blackKeys;
+	const audioArray = $(noteDiv).hasClass('piano-white') ? whiteNoteAudios : blackNoteAudios;
+	for (i = 0; i < keyArray.length; i++) {
+		if ($(noteDiv).hasClass(keyArray[i])) {
+			audioArray[i].play();
+			thisNoteStart = d.getTime() - originalStartTime;
+		}
+		noteDiv.style.backgroundColor = 'cyan';
+	}
+}
+
+function note_off(noteDiv) {
+	const keyArray = $(noteDiv).hasClass('piano-white') ? whiteKeys : blackKeys;
+	const audioArray = $(noteDiv).hasClass('piano-white') ? whiteNoteAudios : blackNoteAudios;		
+	const colour = $(noteDiv).hasClass('piano-white') ? 'white' : 'black';
+	if (noteDiv.style.backgroundColor == 'cyan'){
+		for (i = 0; i < keyArray.length; i++) {
+			if ($(noteDiv).hasClass(keyArray[i])) {
+				audioArray[i].pause();
+				audioArray[i].currentTime = 0;
+				endTime = d.getTime() - originalStartTime;
+				ai_response(colour);
+			}
+		}
+		noteDiv.style.backgroundColor = colour;
+	}
+}
+
 var main = function() {
+	const lowerOctave = {83:document.querySelectorAll('div.C3')[0], 69:document.querySelectorAll('div.Cs3')[0], 68:document.querySelectorAll('div.D3')[0],
+		82:document.querySelectorAll('div.Ds3')[0], 70:document.querySelectorAll('div.E3')[0], 71: document.querySelectorAll('div.F3')[0],
+		89:document.querySelectorAll('div.Fs3')[0], 72:document.querySelectorAll('div.G3')[0], 85:document.querySelectorAll('div.Gs3')[0],
+		74:document.querySelectorAll('div.A4')[0], 73:document.querySelectorAll('div.As4')[0], 75:document.querySelectorAll('div.B4')[0],
+		76:document.querySelectorAll('div.C4')[0]}
+	const middleOctave = {83:document.querySelectorAll('div.C4')[0], 69:document.querySelectorAll('div.Cs4')[0], 68:document.querySelectorAll('div.D4')[0],
+		82:document.querySelectorAll('div.Ds4')[0], 70:document.querySelectorAll('div.E4')[0], 71: document.querySelectorAll('div.F4')[0],
+		89:document.querySelectorAll('div.Fs4')[0], 72:document.querySelectorAll('div.G4')[0], 85:document.querySelectorAll('div.Gs4')[0],
+		74:document.querySelectorAll('div.A5')[0], 73:document.querySelectorAll('div.As5')[0], 75:document.querySelectorAll('div.B5')[0],
+		76:document.querySelectorAll('div.C5')[0]}
+	const upperOctave = {83:document.querySelectorAll('div.C5')[0], 69:document.querySelectorAll('div.Cs5')[0], 68:document.querySelectorAll('div.D5')[0],
+		82:document.querySelectorAll('div.Ds5')[0], 70:document.querySelectorAll('div.E5')[0], 71: document.querySelectorAll('div.F5')[0],
+		89:document.querySelectorAll('div.Fs5')[0], 72:document.querySelectorAll('div.G5')[0], 85:document.querySelectorAll('div.Gs5')[0],
+		74:document.querySelectorAll('div.A6')[0], 73:document.querySelectorAll('div.As6')[0], 75:document.querySelectorAll('div.B6')[0]}
 
 	document.body.onmousedown = function() {
 		mouseDown = 1;
@@ -77,271 +143,58 @@ var main = function() {
 		mouseDown = 0;
 	}
 
-	$('.piano-white').mousedown(function() {
-		for (i = 0; i < whiteKeys.length; i++) {
-			if ($(this).hasClass(whiteKeys[i])) {
-				whiteNoteAudios[i].play();
-				$.ajax({
-					url: 'gen/',
-					method: 'POST',
-					dataType:'json',
-					data: {
-						'note': whiteKeys[i]
-					},
-					success: function(msg) {
-						$.each(msg, function(key, val) {
-							for (i = 0; i < whiteKeys.length; i++) {
-								if(whiteKeys[i] == val) {
-									whiteNoteAudios[i].play();
-								}
-							}
-							var elements = document.querySelectorAll('div.'.concat(val));
-							console.log(elements);
-							for (var i = 0; i < elements.length; i++) {
-								elements[i].style.backgroundColor = 'yellow';
-							}
-						})
-					}
-				});
-			}
-			this.style.backgroundColor = 'cyan';
-		}
+	$('.piano-key').mousedown(function() {
+		note_on(this);
 	})
 
-	$('.piano-white').mouseup(function() {
-		if (this.style.backgroundColor == 'cyan'){
-			for (i = 0; i < whiteKeys.length; i++) {
-				if ($(this).hasClass(whiteKeys[i])) {
-					whiteNoteAudios[i].pause();
-					whiteNoteAudios[i].currentTime = 0;
-					$.ajax({
-						url: 'off/',
-						method: 'POST',
-						dataType:'json',
-						data: {
-							'note': whiteKeys[i]
-						},
-						success: function(msg) {
-							$.each(msg, function(key, val) {
-								for (i = 0; i < whiteKeys.length; i++) {
-									if(whiteKeys[i] == val) {
-										whiteNoteAudios[i].pause();
-										whiteNoteAudios[i].currentTime = 0;
-									}
-								}
-								var elements = document.querySelectorAll('div.'.concat(val));
-								console.log(elements);
-								for (var i = 0; i < elements.length; i++) {
-									elements[i].style.backgroundColor = 'white';
-								}
-							})
-						}
-					});
-				}
-			}
-			this.style.backgroundColor = 'white';
-		}
-	})
-
-	$('.piano-white').mouseleave(function() {
-		if (this.style.backgroundColor == 'cyan'){
-			for (i = 0; i < whiteKeys.length; i++) {
-				if ($(this).hasClass(whiteKeys[i])) {
-					whiteNoteAudios[i].pause();
-					whiteNoteAudios[i].currentTime = 0;
-					$.ajax({
-						url: 'off/',
-						method: 'POST',
-						dataType:'json',
-						data: {
-							'note': whiteKeys[i]
-						},
-						success: function(msg) {
-							$.each(msg, function(key, val) {
-								for (i = 0; i < whiteKeys.length; i++) {
-									if(whiteKeys[i] == val) {
-										whiteNoteAudios[i].pause();
-										whiteNoteAudios[i].currentTime = 0;
-									}
-								}
-								var elements = document.querySelectorAll('div.'.concat(val));
-								console.log(elements);
-								for (var i = 0; i < elements.length; i++) {
-									elements[i].style.backgroundColor = 'white';
-								}
-							})
-						}
-					});
-				}
-			}
-			this.style.backgroundColor = 'white';
-		}
-	})
-
-	$('.piano-white').mouseenter(function() {
+	$('.piano-key').mouseenter(function() {
 		if (mouseDown == 1) {
-			for (i = 0; i < whiteKeys.length; i++) {
-				if ($(this).hasClass(whiteKeys[i])) {
-					whiteNoteAudios[i].play();
-					$.ajax({
-						url: 'gen/',
-						method: 'POST',
-						dataType:'json',
-						data: {
-							'note': whiteKeys[i]
-						},
-						success: function(msg) {
-							$.each(msg, function(key, val) {
-								for (i = 0; i < whiteKeys.length; i++) {
-									if(whiteKeys[i] == val) {
-										whiteNoteAudios[i].play();
-									}
-								}
-								var elements = document.querySelectorAll('div.'.concat(val));
-								console.log(elements);
-								for (var i = 0; i < elements.length; i++) {
-									elements[i].style.backgroundColor = 'yellow';
-								}
-							})
-						}
-					});
-				}
-				this.style.backgroundColor = 'cyan';
-			}
+			note_on(this);
 		}
 	})
 
-	$('.piano-black').mousedown(function() {
-		for (i=0; i < blackKeys.length; i++) {
-			if ($(this).hasClass(blackKeys[i])) {
-				blackNoteAudios[i].play();
-				$.ajax({
-					url: 'gen/',
-					method: 'POST',
-					dataType:'json',
-					data: {
-						'note': blackKeys[i]
-					},
-					success: function(msg) {
-						$.each(msg, function(key, val) {
-							for (i = 0; i < blackKeys.length; i++) {
-								if(blackKeys[i] == val) {
-									blackNoteAudios[i].play();
-								}
-							}
-							var elements = document.querySelectorAll('div.'.concat(val));
-							console.log(elements);
-							for (var i = 0; i < elements.length; i++) {
-								elements[i].style.backgroundColor = 'yellow';
-							}
-						})
-					}
-				});
-			}
-		}
-		this.style.backgroundColor = 'cyan';
+	$('.piano-key').mouseup(function() {
+		note_off(this);
 	})
 
-	$('.piano-black').mouseenter(function() {
-		if (mouseDown == 1) {
-			for (i=0; i < blackKeys.length; i++) {
-				if ($(this).hasClass(blackKeys[i])) {
-					blackNoteAudios[i].play();
-					$.ajax({
-						url: 'gen/',
-						method: 'POST',
-						dataType:'json',
-						data: {
-							'note': blackKeys[i]
-						},
-						success: function(msg) {
-							$.each(msg, function(key, val) {
-								for (i = 0; i < blackKeys.length; i++) {
-									if(blackKeys[i] == val) {
-										blackNoteAudios[i].play();
-									}
-								}
-								var elements = document.querySelectorAll('div.'.concat(val));
-								console.log(elements);
-								for (var i = 0; i < elements.length; i++) {
-									elements[i].style.backgroundColor = 'yellow';
-								}
-							})
-						}
-					});
-				}
-			}
-			this.style.backgroundColor = 'cyan';
+	$('.piano-key').mouseleave(function() {
+		if (this.style.backgroundColor == 'cyan') {
+			note_off(this);
 		}
 	})
 
-	$('.piano-black').mouseup(function() {
-		for (i=0; i < blackKeys.length; i++) {
-			if ($(this).hasClass(blackKeys[i])) {
-				blackNoteAudios[i].pause();
-				blackNoteAudios[i].currentTime = 0;
-				$.ajax({
-					url: 'off/',
-					method: 'POST',
-					dataType:'json',
-					data: {
-						'note': blackKeys[i]
-					},
-					success: function(msg) {
-						$.each(msg, function(key, val) {
-							for (i = 0; i < blackKeys.length; i++) {
-								if(blackKeys[i] == val) {
-									blackNoteAudios[i].pause();
-									blackNoteAudios[i].currentTime = 0;
-								}
-							}
-							var elements = document.querySelectorAll('div.'.concat(val));
-							console.log(elements);
-							for (var i = 0; i < elements.length; i++) {
-								elements[i].style.backgroundColor = 'black';
-							}
-						})
-					}
-				});
-			}
+	$(document).keydown(function(e) {
+		if (e.which == 90 && octaveNum > 3) {
+			octaveNum -= 1;
+		} else if (e.which == 88 && octaveNum < 5) {
+			octaveNum += 1;
 		}
-		this.style.backgroundColor = 'black';
+		if (octaveNum == 3 && (e.which in lowerOctave)) {
+			note_on(lowerOctave[e.which]);
+		} else if (octaveNum == 4 && (e.which in middleOctave)) {
+			note_on(middleOctave[e.which]);
+		} else if (octaveNum == 5 && (e.which in upperOctave)) {
+			note_on(upperOctave[e.which]);
+		}
 	})
 
-	$('.piano-black').mouseleave(function() {
-		for (i=0; i < blackKeys.length; i++) {
-			if ($(this).hasClass(blackKeys[i])) {
-				blackNoteAudios[i].pause();
-				blackNoteAudios[i].currentTime = 0;
-				$.ajax({
-					url: 'off/',
-					method: 'POST',
-					dataType:'json',
-					data: {
-						'note': blackKeys[i]
-					},
-					success: function(msg) {
-						$.each(msg, function(key, val) {
-							for (i = 0; i < blackKeys.length; i++) {
-								if(blackKeys[i] == val) {
-									blackNoteAudios[i].pause();
-									blackNoteAudios[i].currentTime = 0;
-								}
-							}
-							var elements = document.querySelectorAll('div.'.concat(val));
-							console.log(elements);
-							for (var i = 0; i < elements.length; i++) {
-								elements[i].style.backgroundColor = 'black';
-							}
-						})
-					}
-				});
-			}
+	$(document).keyup(function(e) {
+		if (octaveNum == 3 && (e.which in lowerOctave)) {
+			note_off(lowerOctave[e.which]);
+		} else if (octaveNum == 4 && (e.which in middleOctave)) {
+			note_off(middleOctave[e.which]);
+		} else if (octaveNum == 5 && (e.which in upperOctave)) {
+			note_off(upperOctave[e.which]);
 		}
-		this.style.backgroundColor = 'black';
 	})
 
 };
+
+
+
+
+
+
 
 // The below code is from https://github.com/realpython/django-form-fun/blob/master/part1/main.js
 // Implements csrf for ajax so that data is more secure

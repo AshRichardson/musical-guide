@@ -19,6 +19,5 @@ urlpatterns = [
 	path('thank_you/', views.thank_you, name='thank_you'),
 	path('debug/', views.debug, name='debug'),
 	path('condition_one/gen/', views.cond_one_response),
-	path('condition_one/off/', views.cond_one_off),
 	path('condition_two/magenta_gen/', views.cond_two_response),
 ]

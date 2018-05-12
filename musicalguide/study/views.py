@@ -70,13 +70,12 @@ def debug(request):
 
 @csrf_protect
 def cond_one_response(request):
-	time.sleep(3)
-	return JsonResponse({'ai_notes':request.POST.get('note')})
+	return JsonResponse({'notes':request.POST.get('note')})
 
-@csrf_protect
-def cond_one_off(request):
-	time.sleep(3)
-	return JsonResponse({'off_note':request.POST.get('note')})
+# @csrf_protect
+# def cond_one_off(request):
+# 	time.sleep(3)
+# 	return JsonResponse({'off_note':request.POST.get('note')})
 
 @csrf_protect
 def cond_two_response(request):
