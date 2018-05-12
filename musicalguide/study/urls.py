@@ -21,5 +21,4 @@ urlpatterns = [
 	path('condition_one/gen/', views.cond_one_response),
 	path('condition_one/off/', views.cond_one_off),
 	path('condition_two/magenta_gen/', views.cond_two_response),
-	path('condition_two/off/', views.cond_two_off),
 ]
