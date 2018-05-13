@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from .models import PreQuestionnaireForm, PostQuestionnaireForm, Participant, Note
+from .models import PreQuestionnaireForm, PostQuestionnaireForm, Participant, Note, ComputerNote
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 #from resources.magenta_predict import *
@@ -74,6 +74,13 @@ def cond_one_response(request):
 	newNote = Note(participant=participant, noteName=request.POST.get('note'), startTime=request.POST.get('startTime'), duration=request.POST.get('duration'), interaction='echo')
 	participant.save()
 	newNote.save()
+	# Hard-coded delay of 2 seconds; TODO
+	print(request.POST.get('startTime'))
+	aiStartTime = int(request.POST.get('startTime')) + 2000
+	print('ai', aiStartTime)
+	aiNote = ComputerNote(participant=participant, noteName=request.POST.get('note'), startTime=aiStartTime, duration=request.POST.get('duration'), interaction='echo')
+	participant.save()
+	aiNote.save()
 	return JsonResponse({'notes':[request.POST.get('note'), request.POST.get('duration')]})
 
 @csrf_protect
@@ -88,6 +95,9 @@ def cond_two_response(request):
 	for i, note in enumerate(response):
 		if len(note[0]) == 3:
 			note = (note[0][0] + 's' + note[0][2], note[1], note[2])
+		aiNote = ComputerNote(participant=participant, noteName=note[0], startTime=int(request.POST.get('startTime')) + note[1], duration=note[2]-note[1], interaction='magenta')
+		participant.save()
+		aiNote.save()
 		notes.append((note[0], note[1], note[2] - note[1]))
 	return JsonResponse({'notes':notes})
 
