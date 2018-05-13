@@ -181,10 +181,11 @@ def get_midi_data(userNoteName, start, end):
 		userNoteName = userNoteName[0] + '#' + userNoteName[2]
 	primer = pretty_midi.PrettyMIDI()
 	instrument = pretty_midi.Instrument(program=pretty_midi.instrument_name_to_program('Cello'))
-	for _ in range(3):
-		noteNumber = pretty_midi.note_name_to_number(userNoteName)
-		note = pretty_midi.Note(velocity=100, pitch=noteNumber, start=start, end=end)
-		instrument.notes.append(note)
+	# for _ in range(3):
+	noteNumber = pretty_midi.note_name_to_number(userNoteName)
+	note = pretty_midi.Note(velocity=100, pitch=noteNumber, start=start, end=end)
+	instrument.notes.append(note)
+	
 	output = generate_midi(primer, total_seconds=2)
 	pianoRoll = output.get_piano_roll()
 	

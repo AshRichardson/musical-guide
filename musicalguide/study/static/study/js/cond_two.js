@@ -63,12 +63,12 @@ function ai_response(keyColour, index, duration, startTime) {
 					const noteDuration = note[2];
 					let keyIndex = 0;
 					for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
-						let thisIndex = keyIndex;
+						const thisIndex = keyIndex > 20 ? keyIndex - 21 : keyIndex;
 						if(allKeyArray[thisIndex] == noteName) {
 							setTimeout(function() {
-								if (thisIndex > 20) {
-									thisIndex -= 21;
-								}
+								// if (thisIndex > 20) {
+								// 	thisIndex -= 21;
+								// }
 								audioArray[thisIndex].play()
 								let element = document.querySelectorAll('div.'.concat(noteName))[0];
 								element.style.backgroundColor = 'yellow';
@@ -173,11 +173,50 @@ var main = function() {
 		}
 	})
 
+
 	$(document).keydown(function(e) {
 		if (e.which == 90 && octaveNum > 3) {
 			octaveNum -= 1;
+			if (octaveNum == 3) {
+				const middleElements = document.getElementsByClassName('middle-octave');
+				for (var i = 0; i < middleElements.length; i++) {
+					middleElements[i].style.display = 'none';
+				}
+				const lowerElements = document.getElementsByClassName('lower-octave');
+				for (var i = 0; i < lowerElements.length; i++) {
+					lowerElements[i].style.display = 'block';
+				}
+			} else {
+				const upperElements = document.getElementsByClassName('upper-octave');
+				for (var i = 0; i < upperElements.length; i++) {
+					upperElements[i].style.display = 'none';
+				}	
+				const middleElements = document.getElementsByClassName('middle-octave');
+				for (var i = 0; i < middleElements.length; i++) {
+					middleElements[i].style.display = 'block';
+				}
+			}
 		} else if (e.which == 88 && octaveNum < 5) {
 			octaveNum += 1;
+			if (octaveNum == 4) {
+				const lowerElements = document.getElementsByClassName('lower-octave');
+				for (var i = 0; i < lowerElements.length; i++) {
+					lowerElements[i].style.display = 'none';
+				}	
+				const middleElements = document.getElementsByClassName('middle-octave');
+				for (var i = 0; i < middleElements.length; i++) {
+					middleElements[i].style.display = 'block';
+				}
+			} else {
+				const middleElements = document.getElementsByClassName('middle-octave');
+				for (var i = 0; i < middleElements.length; i++) {
+					middleElements[i].style.display = 'none';
+				}
+				const upperElements = document.getElementsByClassName('upper-octave');
+				for (var i = 0; i < upperElements.length; i++) {
+					upperElements[i].style.display = 'block';
+				}
+			}
 		}
 		if (octaveNum == 3 && (e.which in lowerOctave)) {
 			note_on(lowerOctave[e.which]);

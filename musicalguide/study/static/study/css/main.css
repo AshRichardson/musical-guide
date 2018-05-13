@@ -280,3 +280,30 @@ fieldset.inlineLabels ul {list-style:none}
 	padding-right: 50px;
 	text-align: justify;
 }
+
+.white-key-label {
+	bottom:10px;
+	position:absolute;
+	left:1.5em;
+}
+
+.black-key-label {
+	color: #FFFFFF;
+	bottom:10px;
+	position:absolute;
+	left:0.9em;
+}
+
+.lower-octave {
+	display:none;
+}
+
+.upper-octave {
+	display:none;
+}
+
+.up-down-instruction{
+	position:absolute;
+	top:25em;
+	left:5em;
+}
