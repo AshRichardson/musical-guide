@@ -70,31 +70,17 @@ def debug(request):
 
 @csrf_protect
 def cond_one_response(request):
-	return JsonResponse({'notes':request.POST.get('note')})
-
-# @csrf_protect
-# def cond_one_off(request):
-# 	time.sleep(3)
-# 	return JsonResponse({'off_note':request.POST.get('note')})
+	return JsonResponse({'notes':[request.POST.get('note'), request.POST.get('duration')]})
 
 @csrf_protect
 def cond_two_response(request):
-	# time.sleep(2)
 	response = get_midi_data(request.POST.get('note'), request.POST.get('startTime'), request.POST.get('endTime'))
 	notes = []
 	for i, note in enumerate(response):
 		if len(note[0]) == 3:
 			note = (note[0][0] + 's' + note[0][2], note[1], note[2])
 		notes.append((note[0], note[1], note[2] - note[1]))
-		#notes.append((note[0], note[2] - note[1]))
 	return JsonResponse({'notes':notes})
-	# return JsonResponse({'next_note':request.POST.get('note')})
-
-# @csrf_protect
-# def cond_two_off(request):
-# 	response = get_midi_data(request.POST.get('note'), request.POST.get('startTime'), request.POST.get('endTime'))
-# 	time.sleep(2)
-# 	return JsonResponse({'off_note':request.POST.get('note')}) # TODO
 
 #----------- REFACTOR BELOW PART INTO MAGENTA_PREDICT.PY EVENTUALLY; TODO -----------#
 

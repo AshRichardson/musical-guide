@@ -5,10 +5,10 @@
 	<h1 class='post-title'> Instructions for Interaction One </h1>
 </div>
 <p class='instruction-block'>Thanks for completing the pre-study questionnaire. Your answers have been recorded. <br />
-When you press the 'Next' button in the lower right corner, you will be taken to a screen containing an interactive piano. Play on the piano using your mouse/trackpad, or using the keys on the keyboard. An AI will play along with you. When you've had enough, press the 'Next' button.<br />
+When you are ready, click the arrow below to move to the first interaction. You will be taken to a screen containing an interactive piano. Play on the piano using your mouse/trackpad, or using the keys on the keyboard. An AI will play along with you. When you've had enough, click the arrow again to move on.<br />
 
 <div class='submit-button'>
 	<form action = "{% url 'study:instructions_one_ok' %}">
-		<input type="submit" value="Next" />
+	<input id='next-button' type="image" src="../../../static/study/images/arrow.jpg" height="40" width="60" />
 	</form>
 </div>

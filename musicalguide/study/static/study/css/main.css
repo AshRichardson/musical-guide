@@ -271,8 +271,8 @@ fieldset.inlineLabels ul {list-style:none}
 
 .submit-button {
 	position:fixed;
-	bottom:0px;
-	right:10px;
+	bottom:10px;
+	right:20px;
 }
 
 .instruction-block {

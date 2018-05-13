@@ -6,9 +6,9 @@
 </div>
 
 <p class='instruction-block'>Thanks for completing the first interaction. <br />
-When you click the 'Next' button you will be taken to a screen containing another interactive piano, that looks identical. Again, play on the piano by using your mouse/trackpad or using the keys on your keyboard. An AI will play along with you, however, this AI will use a different algorithm to generate responses. When you've had enough, press the 'Next' button to complete the final questionnaire.<br />
+When you click the arrow you will be taken to a screen containing another interactive piano, that looks identical. Again, play on the piano by using your mouse/trackpad or using the keys on your keyboard. An AI will play along with you, however, this AI will use a different algorithm to generate responses. When you've had enough, press the arrow to complete the final questionnaire.<br />
 <div class='submit-button'>
 	<form action = "{% url 'study:instructions_two_ok' %}">
-		<input type="submit" value="Next" />
+		<input id='next-button' type="image" src="../../../static/study/images/arrow.jpg" height="40" width="60" />
 	</form>
 </div>
