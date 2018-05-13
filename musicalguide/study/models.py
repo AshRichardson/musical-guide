@@ -1,6 +1,7 @@
 from django.db import models
 from django import forms
 from django.forms.widgets import RadioSelect
+import json
 # from django.forms.extras.widgets import SelectDateWidget
 
 # Choice options
@@ -172,4 +173,10 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'why_system_preferred': forms.Textarea(attrs={'width':'100%'})
 		}
 
-
+class Note(models.Model):
+	participant = models.ForeignKey(Participant, on_delete=models.CASCADE, default=1)
+	noteName = models.CharField(max_length=3, default='000')
+	startTime = models.IntegerField(default=0)
+	duration = models.IntegerField(default=0)
+	interaction = models.CharField(max_length=10, default='echo')
+	list_filter = ('participant', 'interaction', )

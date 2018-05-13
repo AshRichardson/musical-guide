@@ -21,10 +21,9 @@ for (var i = 0; i < blackKeys.length; i++) {
 const allKeyArray = whiteKeys.concat(blackKeys);
 
 var mouseDown = 0;
-var d = new Date();
-var originalStartTime = d.getTime();
-var thisNoteStart = 0;
-var endTime = 0;
+const d = new Date();
+const originalStartTime = d.getTime();
+var notesOn = {};
 
 var octaveNum = 4;
 
@@ -43,7 +42,7 @@ function generate_note(path, params) {
 	form.submit();
 }
 
-function ai_response(keyColour) {
+function ai_response(keyColour, index, duration, startTime) {
 	const keyArray = keyColour == 'white' ? whiteKeys : blackKeys;
 	const audioArray = keyColour == 'white' ? whiteNoteAudios : blackNoteAudios;
 	$.ajax({
@@ -51,7 +50,9 @@ function ai_response(keyColour) {
 		method: 'POST',
 		dataType:'json',
 		data: {
-			'note': keyArray[i]
+			'note': keyArray[index],
+			'startTime': startTime,
+			'duration': duration
 		},
 		success: function(msg) {
 			$.each(msg, function(key, val) {
@@ -95,11 +96,15 @@ function note_on(noteDiv) {
 	const keyArray = $(noteDiv).hasClass('piano-white') ? whiteKeys : blackKeys;
 	const audioArray = $(noteDiv).hasClass('piano-white') ? whiteNoteAudios : blackNoteAudios;
 	for (i = 0; i < keyArray.length; i++) {
-		if ($(noteDiv).hasClass(keyArray[i])) {
-			audioArray[i].play();
-			thisNoteStart = d.getTime() - originalStartTime;
+		const index = i;
+		if ($(noteDiv).hasClass(keyArray[index])) {
+				if (!(keyArray[index] in notesOn)) {
+				audioArray[index].play();
+				const now = new Date();
+				notesOn[keyArray[index]] = now.getTime();
+			}
+			noteDiv.style.backgroundColor = 'cyan';
 		}
-		noteDiv.style.backgroundColor = 'cyan';
 	}
 }
 
@@ -109,11 +114,15 @@ function note_off(noteDiv) {
 	const colour = $(noteDiv).hasClass('piano-white') ? 'white' : 'black';
 	if (noteDiv.style.backgroundColor == 'cyan'){
 		for (i = 0; i < keyArray.length; i++) {
-			if ($(noteDiv).hasClass(keyArray[i])) {
-				audioArray[i].pause();
-				audioArray[i].currentTime = 0;
+			const index = i;
+			if ($(noteDiv).hasClass(keyArray[index])) {
+				audioArray[index].pause();
+				audioArray[index].currentTime = 0;
+				const now = new Date();
+				const duration = now.getTime() - notesOn[keyArray[index]];
 				endTime = d.getTime() - originalStartTime;
-				ai_response(colour);
+				ai_response(colour, index, duration, notesOn[keyArray[index]]);
+				delete notesOn[keyArray[index]];
 			}
 		}
 		noteDiv.style.backgroundColor = colour;

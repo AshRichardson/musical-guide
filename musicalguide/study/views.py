@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from .models import PreQuestionnaireForm, PostQuestionnaireForm, Participant
+from .models import PreQuestionnaireForm, PostQuestionnaireForm, Participant, Note
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 #from resources.magenta_predict import *
@@ -70,11 +70,20 @@ def debug(request):
 
 @csrf_protect
 def cond_one_response(request):
+	participant = Participant.objects.all().get(pk=request.session.get('identifier'))
+	newNote = Note(participant=participant, noteName=request.POST.get('note'), startTime=request.POST.get('startTime'), duration=request.POST.get('duration'), interaction='echo')
+	participant.save()
+	newNote.save()
 	return JsonResponse({'notes':[request.POST.get('note'), request.POST.get('duration')]})
 
 @csrf_protect
 def cond_two_response(request):
-	response = get_midi_data(request.POST.get('note'), request.POST.get('startTime'), request.POST.get('endTime'))
+	response = get_midi_data(request.POST.get('note'), 0, request.POST.get('duration'))
+	participant = Participant.objects.all().get(pk=request.session.get('identifier'))
+	newNote = Note(participant=participant, noteName=request.POST.get('note'), startTime=request.POST.get('startTime'), duration=request.POST.get('duration'), interaction='magenta')
+	participant.save()
+	newNote.save()
+	print(newNote)
 	notes = []
 	for i, note in enumerate(response):
 		if len(note[0]) == 3:
