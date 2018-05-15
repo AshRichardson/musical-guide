@@ -64,6 +64,7 @@ function ai_response(keyColour, index, duration, startTime) {
 					let keyIndex = 0;
 					for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
 						const thisIndex = keyIndex > 20 ? keyIndex - 21 : keyIndex;
+						console.log(thisIndex);
 						if(allKeyArray[thisIndex] == noteName) {
 							setTimeout(function() {
 								// if (thisIndex > 20) {

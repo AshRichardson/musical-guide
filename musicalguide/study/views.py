@@ -34,6 +34,7 @@ def submitted_pre(request):
 			identifier = data.id
 			request.session['identifier'] = identifier
 			return HttpResponseRedirect(reverse('study:instructions_one', args=(identifier,)))
+
 	return HttpResponseRedirect(reverse('study:pre'))
 
 def condition_one(request):
@@ -41,14 +42,20 @@ def condition_one(request):
 
 def instructions_one_ok(request):
 	identifier = request.session.get('identifier')
-	return HttpResponseRedirect(reverse('study:condition_one'))
+	if identifier % 2 == 1:
+		return HttpResponseRedirect(reverse('study:condition_one'))
+	else:
+		return HttpResponseRedirect(reverse('study:condition_two'))
 
 def instructions_two(request):
 	return render(request, 'study/instructions_two.html')
 
 def instructions_two_ok(request):
 	identifier = request.session.get('identifier')
-	return HttpResponseRedirect(reverse('study:condition_two'))
+	if identifier % 2 == 1:
+		return HttpResponseRedirect(reverse('study:condition_two'))
+	else:
+		return HttpResponseRedirect(reverse('study:condition_one'))
 
 def condition_two(request):
 	return render(request, 'study/condition_two.html', {'participant_id': request.session.get('identifier')})

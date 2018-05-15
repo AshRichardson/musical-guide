@@ -10,7 +10,7 @@ RATING_CHOICES = [('1', '1 (not enjoyable at all)'), ('2', '2'), ('3', '3'), ('4
 GENDER_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
 AGE = [(0, 18), (1, 19), (2, 20), (3, 21), (4, 22)] # Needs more ages; TODO
 YES_NO = [('y', 'Yes'), ('n', 'No')]
-EXPERTISE_CHOICES = [('0', 'Beginner'), ('1', 'Intermediate'),
+EXPERTISE_CHOICES = [(None, 'Not applicable'), ('0', 'Beginner'), ('1', 'Intermediate'),
 	('2', 'Advanced'), ('3', 'Professional')]
 HOURS_OPTIONS = [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'),
 	(6, '6'), (7, '7'), (8, '8'), (9, '9'), (10, '10'), (11, '11'), (12, '12'),
@@ -57,9 +57,9 @@ class Participant(models.Model):
 	age = models.IntegerField(default=0)
 	gender = models.CharField(max_length=6, choices=GENDER_CHOICES, default='o')
 	plays_instruments=models.CharField(choices=YES_NO, max_length=3, default='')
-	instrument_list=models.CharField(max_length=500, default='')
-	ability = models.CharField(choices=EXPERTISE_CHOICES, max_length=1, default='')
-	hours_practiced_per_week = models.IntegerField(default=0)
+	instrument_list=models.CharField(max_length=500, default='', blank=True)
+	ability = models.CharField(choices=EXPERTISE_CHOICES, max_length=1, null=True, blank=True)
+	hours_practiced_per_week = models.IntegerField(null=True, blank=True)
 	hours_listening_per_week = models.IntegerField(default=0)
 	preferred_genres = models.CharField(max_length=500, default='')
 	predicted_playing_time = models.CharField(max_length=100, default='')
