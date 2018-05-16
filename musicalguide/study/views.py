@@ -60,6 +60,18 @@ def instructions_two_ok(request):
 def condition_two(request):
 	return render(request, 'study/condition_two.html', {'participant_id': request.session.get('identifier')})
 
+def cond_two_next(request):
+	if request.session.get('identifier') % 2 == 1:
+		return HttpResponseRedirect(reverse('study:post'))
+	else:
+		return HttpResponseRedirect(reverse('study:instructions_two'))
+
+def cond_one_next(request):
+	if request.session.get('identifier') % 2 == 1:
+		return HttpResponseRedirect(reverse('study:instructions_two'))
+	else:
+		return HttpResponseRedirect(reverse('study:post'))
+
 def submitted_post(request):
 	if request.method == 'POST':
 		form = PostQuestionnaireForm(request.POST, instance=Participant.objects.all().get(pk=request.session.get('identifier')))
@@ -149,30 +161,19 @@ generator = melody_rnn_sequence_generator.MelodyRnnSequenceGenerator(
       steps_per_quarter=steps_per_quarter,
       bundle=bundle_file)
 
-def _steps_to_seconds(steps, qpm):
-    return steps * 60.0 / qpm / steps_per_quarter
-
 def generate_midi(midi_data, total_seconds=10):
     primer_sequence = magenta.music.midi_io.midi_to_sequence_proto(midi_data)
 
-    # predict the tempo
-    if len(primer_sequence.notes) > 4:
-        estimated_tempo = midi_data.estimate_tempo()
-        if estimated_tempo > 240:
-            qpm = estimated_tempo / 2
-        else:
-            qpm = estimated_tempo
-    else:
-        qpm = 120
+    # For now, assume 120 quavers per minute
+    qpm = 120
+    steps = 1
     primer_sequence.tempos[0].qpm = qpm
 
     generator_options = generator_pb2.GeneratorOptions()
     # Set the start time to begin on the next step after the last note ends.
     last_end_time = (max(n.end_time for n in primer_sequence.notes)
                      if primer_sequence.notes else 0)
-    generator_options.generate_sections.add(
-        start_time=last_end_time + _steps_to_seconds(1, qpm),
-        end_time=total_seconds)
+    generator_options.generate_sections.add(start_time=last_end_time + 1 * 60.0 / qpm / steps_per_quarter, end_time=total_seconds)
 
     # generate the output sequence
     generated_sequence = generator.generate(primer_sequence, generator_options)

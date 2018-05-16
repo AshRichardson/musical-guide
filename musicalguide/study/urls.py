@@ -20,4 +20,6 @@ urlpatterns = [
 	path('debug/', views.debug, name='debug'),
 	path('condition_one/gen/', views.cond_one_response),
 	path('condition_two/magenta_gen/', views.cond_two_response),
+	path('cond_two_next/', views.cond_two_next, name='cond_two_next'),
+	path('cond_one_next/', views.cond_one_next, name='cond_one_next'),
 ]
