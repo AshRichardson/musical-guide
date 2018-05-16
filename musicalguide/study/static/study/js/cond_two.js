@@ -55,6 +55,7 @@ function ai_response(keyColour, index, duration, startTime) {
 			'duration': duration
 		},
 		success: function(msg) {
+			console.log(msg);
 			$.each(msg, function(key, val) {
 				for (var noteIndex = 0; noteIndex < val.length; noteIndex++) {
 					note = val[noteIndex];
