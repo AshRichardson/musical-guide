@@ -7,6 +7,7 @@ This app was built using the following:
 - Django 2.0.4
 - Tensorflow 1.3.0
 - [Magenta](https://github.com/tensorflow/magenta#installation)
+
 It may work with other versions of these, but no guarantees.
 
 ## Notes
