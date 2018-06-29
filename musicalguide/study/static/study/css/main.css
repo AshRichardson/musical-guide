@@ -275,6 +275,12 @@ fieldset.inlineLabels ul {list-style:none}
 	right:20px;
 }
 
+.submit-button-one {
+	position:relative;
+	bottom:10px;
+	float:right;
+}
+
 .instruction-block {
 	padding-left: 50px;
 	padding-right: 50px;

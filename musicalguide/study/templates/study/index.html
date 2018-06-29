@@ -1,6 +1,8 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'study/css/main.css' %}" />
 
+<script type="text/javascript" src="{% static 'study/js/index.js' %}"></script>
+
 <div id='container'>
 	<h1 class='post-title'> Study: Evaluation of a Responsive Music Interaction System for Engaging Interaction </h1>
 </div>
@@ -44,6 +46,13 @@ By participating in this study, you consent to the unrestricted use of non-ident
 <p class='main_body_paragraph'>If you have further questions please contact Ashleigh Richardson (ashleigh.richardson@uqconnect.edu.au).
 Thank you for your time and interest in the study. <br /><br /></p>
 
-<h3 class='instruction'>If you have read all of the above, and would like to participate, please click <a href="pre/">here</a> to begin.</h3>
+<h3 class='instruction'>If you have read all of the above, and consent to participate, please check the box below, and then click the arrow to move on to the start of the study.<br /></h3>
+
+<p>I consent to participate in this study: <input type="checkbox" id="consentCheckbox" onclick="revealArrow()"></p>
+
+<div class='submit-button' id='submit-button' style="display:none">
+	<form action = "{% url 'study:instructions_one_ok' %}">
+	<input id='next-button' type="image" src="../../../static/study/images/arrow.jpg" height="40" width="60" />
+	</form>
 </div>
 </div>

@@ -18,6 +18,8 @@ HOURS_OPTIONS = [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'),
 	(19, '19'), (20, '20'), (21, '21+')]
 SYSTEMS_CHOICES = [('0', 'First system'), ('1', 'Second system')]
 COMPARISON_CHOICES = [('1', '1 (much worse)'), ('2', '2 (a bit worse)'), ('3', '3 (about the same'), ('4', '4 (a bit better)'), ('5', '5 (much better)')]
+NUMBER_CHOICES = [('1', 'One'), ('2', 'Two'), ('3', 'Three'), ('4', 'Four')]
+OPTION_CHOICES = [('1', '1 (option 1)'), ('2', '2 (option 2)'), ('3', '3 (option 3)'), ('4', '4 (option 4)'), ('5', '5 (option 5)')]
 
 # Pre-survey questionnaire questions
 AGE_QUESTION = 'What is your age (in years)?'
@@ -31,6 +33,7 @@ HOURS_PRACTICED = 'How many hours per week would you say you spend ' + \
 	'practicing playing musical instruments?'
 HOURS_LISTENED = 'How many hours per week would you say you spend ' + \
 	'listening to music?'
+SELECT_THREE = 'Please select the option with the English word for the number 3 below.'
 GENRES_QUESTION = 'What genre/s of music do you generally like to listen to?'
 PREDICTED_PLAYING_TIME = 'If you could play music with a computer, how long do ' + \
 	'you think this would entertain you for (i.e. how long do you think ' + \
@@ -48,6 +51,8 @@ SYSTEM_PREFERRED = "Which system did you prefer playing with (the first or the s
 WHY_SYSTEM_PREFERRED = "Why did you prefer playing with this system?"
 COMPARED_TO_SELF = "How would you rate playing music with this system, compared to playing music by yourself? If you do not play music by yourself, please leave this question blank."
 COMPARED_TO_FRIENDS = "How would you rate playing music with this system, compared to playing music with a friend or family member? If you do not play music with a friend or family member, please leave this question blank."
+FILTER_Q_1 = "Please write the word 'music' in the space below."
+FILTER_Q_2 = "Please select option 4 for this question."
 
 class Participant(models.Model):
 	# Use auto-incremented id as participant id
@@ -61,6 +66,7 @@ class Participant(models.Model):
 	ability = models.CharField(choices=EXPERTISE_CHOICES, max_length=1, null=True, blank=True)
 	hours_practiced_per_week = models.IntegerField(null=True, blank=True)
 	hours_listening_per_week = models.IntegerField(default=0)
+	select_three = models.CharField(max_length=6, choices=NUMBER_CHOICES, default='o')
 	preferred_genres = models.CharField(max_length=500, default='')
 	predicted_playing_time = models.CharField(max_length=100, default='')
 
@@ -71,6 +77,7 @@ class Participant(models.Model):
 	first_system_impression = models.CharField(max_length=500, default='')
 	first_system_good = models.CharField(max_length=500, default='')
 	first_system_bad = models.CharField(max_length=500, default='')
+	filter_q_1 = models.CharField(max_length=20, default='')
 	first_system_suggestions = models.CharField(max_length=500, default='')
 	first_compared_to_self = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
 	first_compared_to_friends = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
@@ -83,6 +90,7 @@ class Participant(models.Model):
 	second_system_bad = models.CharField(max_length=500, default='')
 	second_system_suggestions = models.CharField(max_length=500, default='')
 	second_compared_to_self = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
+	filter_q_2 = models.CharField(max_length=20, choices=OPTION_CHOICES, default='o')
 	second_compared_to_friends = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
 
 	system_preferred = models.CharField(max_length=2, default='', choices=SYSTEMS_CHOICES)
@@ -93,18 +101,20 @@ class PreQuestionnaireForm(forms.ModelForm):
 		model = Participant
 		fields = ['age', 'gender', 'plays_instruments', 'instrument_list', 
 			'ability', 'hours_practiced_per_week', 'hours_listening_per_week',
-			'preferred_genres', 'predicted_playing_time']
+			'select_three', 'preferred_genres', 'predicted_playing_time']
 		labels = {'age':AGE_QUESTION, 'gender':GENDER_QUESTION,
 			'plays_instruments':PLAYS_QUESTION,
 			'instrument_list':LIST_INSTRUMENTS_QUESTION,
 			'ability':ABILITY_QUESTION,
 			'hours_practiced_per_week':HOURS_PRACTICED,
 			'hours_listening_per_week':HOURS_LISTENED,
+			'select_three':SELECT_THREE,
 			'preferred_genres':GENRES_QUESTION,
 			'predicted_playing_time':PREDICTED_PLAYING_TIME}
 		widgets = {'plays_instruments': forms.RadioSelect,
 			'instrument_list': forms.Textarea(attrs={'width':"100%"}),
 			'ability': forms.RadioSelect,
+			'select_three': forms.RadioSelect,
 			'preferred_genres': forms.Textarea(attrs={'width':"100%"}),
 			'predicted_playing_time': forms.Textarea(attrs={'width':"100%"})}
 
@@ -116,7 +126,7 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'first_system_play_again',
 			'first_system_impression',
 			'first_system_good', 'first_system_bad',
-			'first_system_suggestions',
+			'filter_q_1', 'first_system_suggestions',
 			'first_compared_to_self',
 			'first_compared_to_friends',
 			'second_system_estimated_time', 
@@ -126,6 +136,7 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'second_system_good', 'second_system_bad',
 			'second_system_suggestions',
 			'second_compared_to_self',
+			'filter_q_2',
 			'second_compared_to_friends',
 			'system_preferred',
 			'why_system_preferred',
@@ -136,6 +147,7 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'first_system_impression':SYSTEM_IMPRESSION,
 			'first_system_good':SYSTEM_GOOD,
 			'first_system_bad':SYSTEM_BAD,
+			'filter_q_1':FILTER_Q_1,
 			'first_system_suggestions':SYSTEM_SUGGESTIONS,
 			'first_compared_to_self':COMPARED_TO_SELF,
 			'first_compared_to_friends':COMPARED_TO_FRIENDS,
@@ -146,6 +158,7 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'second_system_good':SYSTEM_GOOD,
 			'second_system_bad':SYSTEM_BAD,
 			'second_compared_to_self':COMPARED_TO_SELF,
+			'filter_q_2':FILTER_Q_2,
 			'second_compared_to_friends':COMPARED_TO_FRIENDS,
 			'second_system_suggestions':SYSTEM_SUGGESTIONS,
 			'system_preferred':SYSTEM_PREFERRED,
@@ -157,6 +170,7 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'first_system_impression': forms.Textarea(attrs={'width':"100%"}),
 			'first_system_good':forms.Textarea(attrs={'width':"100%"}),
 			'first_system_bad':forms.Textarea(attrs={'width':"100%"}),
+			'filter_q_1':forms.Textarea(attrs={'width':'100%'}),
 			'first_system_suggestions':forms.Textarea(attrs={'width':"100%"}),
 			'first_compared_to_self': RadioSelect,
 			'first_compared_to_friends': RadioSelect,
@@ -168,6 +182,7 @@ class PostQuestionnaireForm(forms.ModelForm):
 			'second_system_bad':forms.Textarea(attrs={'width':"100%"}),
 			'second_system_suggestions':forms.Textarea(attrs={'width':"100%"}),
 			'second_compared_to_self': RadioSelect,
+			'filter_q_2': RadioSelect,
 			'second_compared_to_friends': RadioSelect,
 			'system_preferred': RadioSelect,
 			'why_system_preferred': forms.Textarea(attrs={'width':'100%'})

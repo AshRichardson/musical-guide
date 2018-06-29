@@ -45,6 +45,7 @@ function generate_note(path, params) {
 function ai_response(keyColour, index, duration, startTime) {
 	const keyArray = keyColour == 'white' ? whiteKeys : blackKeys;
 	const audioArray = keyColour == 'white' ? whiteNoteAudios : blackNoteAudios;
+	console.log('send played stuff');
 	$.ajax({
 		url: 'magenta_gen/',
 		method: 'POST',
@@ -55,17 +56,23 @@ function ai_response(keyColour, index, duration, startTime) {
 			'duration': duration
 		},
 		success: function(msg) {
+			console.log('new message!');
 			console.log(msg);
 			$.each(msg, function(key, val) {
-				for (var noteIndex = 0; noteIndex < val.length; noteIndex++) {
-					note = val[noteIndex];
+
+
+
+				// FOR NOW, JUST TAKE FIRST NOTE RECIEVED; I.E., SEND ONE, GET ONE
+				if (val.length > 0) {
+					note = val[0];
 					const noteName = note[0];
 					const noteStart = note[1];
 					const noteDuration = note[2];
+					console.log(noteName, noteStart, noteDuration);
+
 					let keyIndex = 0;
 					for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
 						const thisIndex = keyIndex > 20 ? keyIndex - 21 : keyIndex;
-						console.log(thisIndex);
 						if(allKeyArray[thisIndex] == noteName) {
 							setTimeout(function() {
 								// if (thisIndex > 20) {
@@ -89,6 +96,40 @@ function ai_response(keyColour, index, duration, startTime) {
 						}
 					}
 				}
+
+
+				// for (var noteIndex = 0; noteIndex < val.length; noteIndex++) {
+				// 	note = val[noteIndex];
+				// 	const noteName = note[0];
+				// 	const noteStart = note[1];
+				// 	const noteDuration = note[2];
+				// 	let keyIndex = 0;
+				// 	for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
+				// 		const thisIndex = keyIndex > 20 ? keyIndex - 21 : keyIndex;
+				// 		// console.log(thisIndex);
+				// 		if(allKeyArray[thisIndex] == noteName) {
+				// 			setTimeout(function() {
+				// 				// if (thisIndex > 20) {
+				// 				// 	thisIndex -= 21;
+				// 				// }
+				// 				audioArray[thisIndex].play()
+				// 				let element = document.querySelectorAll('div.'.concat(noteName))[0];
+				// 				element.style.backgroundColor = 'yellow';
+				// 				setTimeout(function() {							
+				// 					if ($(element).hasClass('piano-white')) {
+				// 						element.style.backgroundColor = 'white';
+				// 						whiteNoteAudios[thisIndex].pause();
+				// 						whiteNoteAudios[thisIndex].currentTime = 0;	
+				// 					} else {
+				// 						element.style.backgroundColor = 'black';
+				// 						blackNoteAudios[thisIndex].pause();
+				// 						blackNoteAudios[thisIndex].currentTime = 0;	
+				// 					}
+				// 				}, noteDuration);								
+				// 			}, noteStart);
+				// 		}
+				// 	}
+				// }
 			})
 		}
 	});
