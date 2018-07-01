@@ -20,6 +20,11 @@ for (var i = 0; i < blackKeys.length; i++) {
 
 const allKeyArray = whiteKeys.concat(blackKeys);
 
+const keyMap = new Object();
+for (var index=0; index<allKeyArray.length; index++) {
+	keyMap[allKeyArray[index]] = index;
+}
+
 var mouseDown = 0;
 const d = new Date();
 const originalStartTime = d.getTime();
@@ -56,8 +61,8 @@ function ai_response(keyColour, index, duration, startTime) {
 			'duration': duration
 		},
 		success: function(msg) {
-			console.log('new message!');
-			console.log(msg);
+			// console.log('new message!');
+			// console.log(msg);
 			$.each(msg, function(key, val) {
 
 
@@ -68,33 +73,48 @@ function ai_response(keyColour, index, duration, startTime) {
 					const noteName = note[0];
 					const noteStart = note[1];
 					const noteDuration = note[2];
-					console.log(noteName, noteStart, noteDuration);
+					// console.log(noteName, noteStart, noteDuration);
 
-					let keyIndex = 0;
-					for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
-						const thisIndex = keyIndex > 20 ? keyIndex - 21 : keyIndex;
-						if(allKeyArray[thisIndex] == noteName) {
-							setTimeout(function() {
-								// if (thisIndex > 20) {
-								// 	thisIndex -= 21;
-								// }
-								audioArray[thisIndex].play()
-								let element = document.querySelectorAll('div.'.concat(noteName))[0];
-								element.style.backgroundColor = 'yellow';
-								setTimeout(function() {							
-									if ($(element).hasClass('piano-white')) {
-										element.style.backgroundColor = 'white';
-										whiteNoteAudios[thisIndex].pause();
-										whiteNoteAudios[thisIndex].currentTime = 0;	
-									} else {
-										element.style.backgroundColor = 'black';
-										blackNoteAudios[thisIndex].pause();
-										blackNoteAudios[thisIndex].currentTime = 0;	
-									}
-								}, noteDuration);								
-							}, noteStart);
-						}
-					}
+					const thisIndex = keyMap[noteName] > 20 ? keyMap[noteName] - 21 : keyMap[noteName];
+					setTimeout(function() {
+						audioArray[thisIndex].play()
+						let element = document.querySelectorAll('div.'.concat(noteName))[0];
+						element.style.backgroundColor = 'yellow';
+						setTimeout(function() {							
+							if ($(element).hasClass('piano-white')) {
+								element.style.backgroundColor = 'white';
+								whiteNoteAudios[thisIndex].pause();
+								whiteNoteAudios[thisIndex].currentTime = 0;	
+							} else {
+								element.style.backgroundColor = 'black';
+								blackNoteAudios[thisIndex].pause();
+								blackNoteAudios[thisIndex].currentTime = 0;	
+							}
+						}, noteDuration);								
+					}, noteStart);
+
+
+					// for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
+					// 	const thisIndex = keyIndex > 20 ? keyIndex - 21 : keyIndex;
+					// 	if(allKeyArray[thisIndex] == noteName) {
+					// 		setTimeout(function() {
+					// 			audioArray[thisIndex].play()
+					// 			let element = document.querySelectorAll('div.'.concat(noteName))[0];
+					// 			element.style.backgroundColor = 'yellow';
+					// 			setTimeout(function() {							
+					// 				if ($(element).hasClass('piano-white')) {
+					// 					element.style.backgroundColor = 'white';
+					// 					whiteNoteAudios[thisIndex].pause();
+					// 					whiteNoteAudios[thisIndex].currentTime = 0;	
+					// 				} else {
+					// 					element.style.backgroundColor = 'black';
+					// 					blackNoteAudios[thisIndex].pause();
+					// 					blackNoteAudios[thisIndex].currentTime = 0;	
+					// 				}
+					// 			}, noteDuration);								
+					// 		}, noteStart);
+					// 	}
+					// }
 				}
 
 
