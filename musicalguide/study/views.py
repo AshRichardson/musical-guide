@@ -212,47 +212,29 @@ def get_midi_data(userNoteName, start, end):
 	note = pretty_midi.Note(velocity=100, pitch=noteNumber, start=int(start), end=int(start) + int(end))
 	instrument.notes.append(note)
 	primer.instruments.append(instrument)
-	print('Time before generate for:', userNoteName, time.time())
-	output = generate_midi(primer, total_seconds=2)
-	print('Time after generate for:', userNoteName, time.time())
-	pianoRoll = output.get_piano_roll()
-	
-	subArrays = np.split(pianoRoll, [48, 81])
-	first = subArrays[1]
-	second = np.split(subArrays[2], [12, 15])[1]
-	ofInterest = np.concatenate((first, second))
-	listOfInterest = ofInterest.tolist()
-	# for subList in listOfInterest:
-	numZeros = 0
-	others = 0
+	# print('Time before generate for:', userNoteName, time.time())
+	output = generate_midi(primer, total_seconds=2) # Takes about 4-6 seconds
 	aiNotes = []
-	for noteIndex, timeList in enumerate(pianoRoll.tolist()):
-		startTime = None
-		endTime = None
-		lastVal = 0
-		for timeIndex, value in enumerate(timeList):
-			# timeIndex = timeIndex * 10
-			if value != 0:
-				# This note is on at timeIndex
-				if lastVal == 0:
-					startTime = timeIndex
-			elif lastVal != 0:
-				# Note was on and is now off. Add to list of notes
-				endTime = timeIndex
-				noteName = pianoRollToNoteName.get(noteIndex)
-				if noteName is not None:
-					aiNotes.append((noteName, startTime // 100, endTime // 100))
-					startTime = None
-					endTime = None
-			lastVal = value
-	if lastVal != 0:
-		endTime = timeIndex
-		noteName = pianoRollToNoteName.get(noteIndex)
-		if noteName is not None:
-			aiNotes.append((noteName, startTime // 100, endTime // 100))
-			startTime = None
-			endTime = None
-	print('Time returning for:', userNoteName, time.time())	
-	return sorted(aiNotes, key=lambda x:x[1])
+	try:
+		note = output.instruments[0].notes[0]
+		notePitch, noteStart, noteEnd = pretty_midi.note_number_to_name(note.pitch), note.start, note.end
+		if len(notePitch) == 3:
+			notePitch = notePitch[0] + 's' + notePitch[2]
+		aiNotes.append((notePitch, noteStart, noteEnd))
+		print('AI notes are', aiNotes)
+		return aiNotes
 
+		# Below is code to handle more than one note generated
+		# At the moment, just taking first note, as subsequent notes
+		# too short to be played
+		# for note in output.instruments[0].notes:
+		# 	notePitch, noteStart, noteEnd = pretty_midi.note_number_to_name(note.pitch), note.start, note.end
+		# 	if len(notePitch) == 3:
+		# 		notePitch = notePitch[0] + 's' + notePitch[2]
+		# 	aiNotes.append((notePitch, noteStart, noteEnd))
+		# 	print('Note adding', notePitch, noteStart, noteEnd)
+		# print('AI notes are', aiNotes)
+		# return sorted(aiNotes, key=lambda x:x[1])
+	except IndexError:
+		return []
 
