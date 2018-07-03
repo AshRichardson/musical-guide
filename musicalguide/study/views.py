@@ -15,8 +15,10 @@ def pre_questionnaire(request):
 	return render(request, 'study/pre.html', {'form':pre})
 
 def post_questionnaire(request):
+	print(request.session.get('identifier'))
 	participant = Participant.objects.all().get(pk=request.session.get('identifier'))
 	questionnaire = PostQuestionnaireForm(instance=participant)
+	# print(questionnaire)
 	context={'form':questionnaire}
 	return render(request, 'study/post.html', context)
 
@@ -113,8 +115,10 @@ def cond_two_response(request):
 	participant = Participant.objects.all().get(pk=request.session.get('identifier'))
 	newNote = Note(participant=participant, noteName=request.POST.get('note'), startTime=request.POST.get('startTime'), duration=request.POST.get('duration'), interaction='magenta')
 	participant.save()
-	newNote.save()
-	print(newNote)
+	try:
+		newNote.save()
+	except ValueError:
+		return JsonResponse({'notes':[]})
 	notes = []
 	for i, note in enumerate(response):
 		if len(note[0]) == 3:
@@ -207,7 +211,10 @@ def get_midi_data(userNoteName, start, end):
 	primer = pretty_midi.PrettyMIDI()
 	instrument = pretty_midi.Instrument(program=pretty_midi.instrument_name_to_program('Cello'))
 	noteNumber = pretty_midi.note_name_to_number(userNoteName)
-	note = pretty_midi.Note(velocity=100, pitch=noteNumber, start=int(start), end=int(start) + int(end))
+	try:
+		note = pretty_midi.Note(velocity=100, pitch=noteNumber, start=int(start), end=int(start) + int(end))
+	except ValueError:
+		return []
 	instrument.notes.append(note)
 	primer.instruments.append(instrument)
 	# print('Time before generate for:', userNoteName, time.time())

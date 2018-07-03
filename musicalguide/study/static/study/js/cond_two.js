@@ -11,16 +11,18 @@ const audioPath = '../../static/study/audio/';
 var whiteNoteAudios = [];
 for (var i = 0; i < whiteKeys.length; i++) {
 	whiteNoteAudios.push(new Audio(audioPath + whiteKeys[i] + '.mp3'));
+	whiteNoteAudios[i].load();
 }
 
 var blackNoteAudios = [];
 for (var i = 0; i < blackKeys.length; i++) {
 	blackNoteAudios.push(new Audio(audioPath + blackKeys[i] + '.mp3'));
+	blackNoteAudios[i].load();
 }
 
 const allKeyArray = whiteKeys.concat(blackKeys);
 
-const keyMap = new Object();
+let keyMap = new Object();
 for (var index=0; index<allKeyArray.length; index++) {
 	keyMap[allKeyArray[index]] = index;
 }
@@ -29,23 +31,24 @@ var mouseDown = 0;
 const d = new Date();
 const originalStartTime = d.getTime();
 var notesOn = {};
+var notesOnPromises = {};
 
 var octaveNum = 4;
 
-function generate_note(path, params) {
-	var form = $('<form></form>');
-	form.attr("method", "post");
-	form.attr("action", path);
-	$.each(params, function(key, val) {
-		var field = $('<input></input>');
-		field.attr('type', 'hidden');
-		field.attr('name', key);
-		field.attr('value', value);
-		form.append(field);
-	});
-	$(document.body).append(form);
-	form.submit();
-}
+// function generate_note(path, params) {
+// 	var form = $('<form></form>');
+// 	form.attr("method", "post");
+// 	form.attr("action", path);
+// 	$.each(params, function(key, val) {
+// 		var field = $('<input></input>');
+// 		field.attr('type', 'hidden');
+// 		field.attr('name', key);
+// 		field.attr('value', value);
+// 		form.append(field);
+// 	});
+// 	$(document.body).append(form);
+// 	form.submit();
+// }
 
 function ai_response(keyColour, index, duration, startTime) {
 	const keyArray = keyColour == 'white' ? whiteKeys : blackKeys;
@@ -64,57 +67,34 @@ function ai_response(keyColour, index, duration, startTime) {
 			// console.log('new message!');
 			// console.log(msg);
 			$.each(msg, function(key, val) {
-
-
-
 				// FOR NOW, JUST TAKE FIRST NOTE RECIEVED; I.E., SEND ONE, GET ONE
 				if (val.length > 0) {
 					note = val[0];
 					const noteName = note[0];
 					const noteStart = note[1];
 					const noteDuration = note[2];
-					// console.log(noteName, noteStart, noteDuration);
 
 					const thisIndex = keyMap[noteName] > 20 ? keyMap[noteName] - 21 : keyMap[noteName];
+					
 					setTimeout(function() {
-						audioArray[thisIndex].play()
-						let element = document.querySelectorAll('div.'.concat(noteName))[0];
-						element.style.backgroundColor = 'yellow';
-						setTimeout(function() {							
-							if ($(element).hasClass('piano-white')) {
-								element.style.backgroundColor = 'white';
-								whiteNoteAudios[thisIndex].pause();
-								whiteNoteAudios[thisIndex].currentTime = 0;	
-							} else {
-								element.style.backgroundColor = 'black';
-								blackNoteAudios[thisIndex].pause();
-								blackNoteAudios[thisIndex].currentTime = 0;	
-							}
-						}, noteDuration);								
+						audioArray[thisIndex].pause();
+						audioArray[thisIndex].load();
+						setTimeout(function() {
+							audioArray[thisIndex].play();
+							let element = document.querySelectorAll('div.'.concat(noteName))[0];
+							element.style.backgroundColor = 'yellow';
+							setTimeout(function() {	
+								audioArray[thisIndex].pause();
+								audioArray[thisIndex].currentTime = 0;
+
+								if ($(element).hasClass('piano-white')) {
+									element.style.backgroundColor = 'white';
+								} else {
+									element.style.backgroundColor = 'black';
+								}
+							}, noteDuration);		
+						}, 150);						
 					}, noteStart);
-
-
-					// for (keyIndex = 0; keyIndex < allKeyArray.length; keyIndex++) {
-					// 	const thisIndex = keyIndex > 20 ? keyIndex - 21 : keyIndex;
-					// 	if(allKeyArray[thisIndex] == noteName) {
-					// 		setTimeout(function() {
-					// 			audioArray[thisIndex].play()
-					// 			let element = document.querySelectorAll('div.'.concat(noteName))[0];
-					// 			element.style.backgroundColor = 'yellow';
-					// 			setTimeout(function() {							
-					// 				if ($(element).hasClass('piano-white')) {
-					// 					element.style.backgroundColor = 'white';
-					// 					whiteNoteAudios[thisIndex].pause();
-					// 					whiteNoteAudios[thisIndex].currentTime = 0;	
-					// 				} else {
-					// 					element.style.backgroundColor = 'black';
-					// 					blackNoteAudios[thisIndex].pause();
-					// 					blackNoteAudios[thisIndex].currentTime = 0;	
-					// 				}
-					// 			}, noteDuration);								
-					// 		}, noteStart);
-					// 	}
-					// }
 				}
 
 
@@ -161,10 +141,14 @@ function note_on(noteDiv) {
 	for (i = 0; i < keyArray.length; i++) {
 		const index = i;
 		if ($(noteDiv).hasClass(keyArray[index])) {
-				if (!(keyArray[index] in notesOn)) {
-				audioArray[index].play();
-				const now = new Date();
-				notesOn[keyArray[index]] = now.getTime();
+			if (!(keyArray[index] in notesOn)) {
+				audioArray[index].load();
+				setTimeout(function() {
+					notesOnPromises[keyArray[index]] = audioArray[index].play();
+					const now = new Date();
+					notesOn[keyArray[index]] = now.getTime();				
+				}, 0);
+
 			}
 			noteDiv.style.backgroundColor = 'cyan';
 		}
@@ -179,13 +163,18 @@ function note_off(noteDiv) {
 		for (i = 0; i < keyArray.length; i++) {
 			const index = i;
 			if ($(noteDiv).hasClass(keyArray[index])) {
-				audioArray[index].pause();
-				audioArray[index].currentTime = 0;
-				const now = new Date();
-				const duration = now.getTime() - notesOn[keyArray[index]];
-				endTime = d.getTime() - originalStartTime;
-				ai_response(colour, index, duration, notesOn[keyArray[index]]);
-				delete notesOn[keyArray[index]];
+				if (keyArray[index] in notesOnPromises && notesOnPromises[keyArray[index]] !== undefined) {
+					notesOnPromises[keyArray[index]].then(_ => {
+						audioArray[index].pause();
+						audioArray[index].currentTime = 0;
+						const now = new Date();
+						const duration = now.getTime() - notesOn[keyArray[index]];
+						endTime = d.getTime() - originalStartTime;
+						ai_response(colour, index, duration, notesOn[keyArray[index]]);
+						delete notesOn[keyArray[index]];
+						delete notesOnPromises[keyArray[index]];
+					});
+				}
 			}
 		}
 		noteDiv.style.backgroundColor = colour;
