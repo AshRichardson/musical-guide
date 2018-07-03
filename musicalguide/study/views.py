@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 #from resources.magenta_predict import *
 import time
+from django.contrib import messages
 
 def index(request):
 	return render(request, 'study/index.html')
@@ -15,9 +16,7 @@ def pre_questionnaire(request):
 
 def post_questionnaire(request):
 	participant = Participant.objects.all().get(pk=request.session.get('identifier'))
-	print(participant)
 	questionnaire = PostQuestionnaireForm(instance=participant)
-
 	context={'form':questionnaire}
 	return render(request, 'study/post.html', context)
 
@@ -28,14 +27,22 @@ def submitted_pre(request):
 	identifier = None
 	if request.method == 'POST':
 		form = PreQuestionnaireForm(request.POST)
-		print(form.is_valid())
 		if form.is_valid():
 			data = form.save()
 			identifier = data.id
 			request.session['identifier'] = identifier
 			return HttpResponseRedirect(reverse('study:instructions_one', args=(identifier,)))
-
+		return render(request, 'study/pre.html', {'form':form})
 	return HttpResponseRedirect(reverse('study:pre'))
+
+def submitted_post(request):
+	if request.method == 'POST':
+		form = PostQuestionnaireForm(request.POST, instance=Participant.objects.all().get(pk=request.session.get('identifier')))
+		if form.is_valid():
+			data = form.save()
+			return HttpResponseRedirect(reverse('study:thank_you'))
+		return render(request, 'study/post.html', {'form':form})
+	return HttpResponseRedirect(reverse('study:post'))
 
 def condition_one(request):
 	return render(request, 'study/condition_one.html', {'participant_id': request.session.get('identifier')})
@@ -71,15 +78,6 @@ def cond_one_next(request):
 		return HttpResponseRedirect(reverse('study:instructions_two'))
 	else:
 		return HttpResponseRedirect(reverse('study:post'))
-
-def submitted_post(request):
-	if request.method == 'POST':
-		form = PostQuestionnaireForm(request.POST, instance=Participant.objects.all().get(pk=request.session.get('identifier')))
-		print(form.is_valid())
-		if form.is_valid():
-			data = form.save()
-			return HttpResponseRedirect(reverse('study:thank_you'))
-	return HttpResponseRedirect(reverse('study:post'))
 
 def thank_you(request):
 	return render(request, 'study/thank_you.html')

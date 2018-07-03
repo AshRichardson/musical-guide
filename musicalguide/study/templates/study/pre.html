@@ -5,12 +5,17 @@
 <h1 class="post-title">Pre-Study Questionnaire</h1>
 </div>
 <div id='body'>
+{% if form.errors %}
+	{% for error in form.non_field_errors %}
+		<p><div id='error-message'>{{ error }}</div></p>
+	{% endfor %}
+{% endif %}
 <p class='main_body_paragraph'>Please answer the questions below. When you are done, please select 'Submit' to move to the next part of the study.</p>
 <form action="{% url 'study:submitted_pre' %}" method="post" novalidate>
 <fieldset class="inlineLabels">
   {% csrf_token %}
   {% for field in form %}
-  	<p>{{  field.label_tag  }}<br />{{  field  }}</p>
+  	<p>{{  field.label_tag  }}<br />{{  field  }}<div id='error-message'> {% if field.errors %}{% for error in field.errors %}{{ error }}{% endfor %}{% endif %}</div></p>
   {% endfor %}
   <button type="submit" value="Submit">Submit</button>
   </fieldset>

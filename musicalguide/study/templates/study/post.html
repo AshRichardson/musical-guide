@@ -5,6 +5,11 @@
 <h1 class="post-title">Post-Study Questionnaire</h1>
 </div>
 <div id='body'>
+{% if form.errors %}
+  {% for error in form.non_field_errors %}
+    <p><div id='error-message'>{{ error }}</div></p>
+  {% endfor %}
+{% endif %}
 <p class='main_body_paragraph'>Please answer the questions below. When you are done, please select 'Submit' to finish the study.</p>
 <form action="{% url 'study:submitted_post' %}" method="post" novalidate>
   {% csrf_token %}
@@ -16,7 +21,7 @@
   {% elif forloop.counter == 19 %}
   <h3 class="instruction">Questions 19 - 21 relate to your overall view of the AI after both interactions.</h3>
   {% endif %}
-  <p>{{  field.label_tag  }}<br />{{  field  }}</p>
+  <p>{{  field.label_tag  }}<br />{{  field  }}<div id='error-message'>{% if field.errors %}{% for error in field.errors %}{{ error }}{% endfor %}{% endif %}</div></p>
   {% endfor %}
   <button type="submit" value="Submit">Submit</button>
   </fieldset>

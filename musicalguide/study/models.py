@@ -22,20 +22,20 @@ NUMBER_CHOICES = [('1', 'One'), ('2', 'Two'), ('3', 'Three'), ('4', 'Four')]
 OPTION_CHOICES = [('1', '1 (option 1)'), ('2', '2 (option 2)'), ('3', '3 (option 3)'), ('4', '4 (option 4)'), ('5', '5 (option 5)')]
 
 # Pre-survey questionnaire questions
-AGE_QUESTION = 'What is your age (in years)?'
-GENDER_QUESTION = 'What is your gender?'
-PLAYS_QUESTION = 'Do you play any musical instruments? If you answer no to' + \
+AGE_QUESTION = 'Q1) What is your age (in years)?'
+GENDER_QUESTION = 'Q2) What is your gender?'
+PLAYS_QUESTION = 'Q3) Do you play any musical instruments? If you answer no to' + \
 	' this question, please skip to Question 7.'
-LIST_INSTRUMENTS_QUESTION = 'Please list all musical instruments that you ' + \
+LIST_INSTRUMENTS_QUESTION = 'Q4) Please list all musical instruments that you ' + \
 	'play, with associated number of years of experience.'
-ABILITY_QUESTION = 'How would you rank your ability to read music?'
-HOURS_PRACTICED = 'How many hours per week would you say you spend ' + \
+ABILITY_QUESTION = 'Q5) How would you rank your ability to read music?'
+HOURS_PRACTICED = 'Q6) How many hours per week would you say you spend ' + \
 	'practicing playing musical instruments?'
-HOURS_LISTENED = 'How many hours per week would you say you spend ' + \
+HOURS_LISTENED = 'Q7) How many hours per week would you say you spend ' + \
 	'listening to music?'
-SELECT_THREE = 'Please select the option with the English word for the number 3 below.'
-GENRES_QUESTION = 'What genre/s of music do you generally like to listen to?'
-PREDICTED_PLAYING_TIME = 'If you could play music with a computer, how long do ' + \
+SELECT_THREE = 'Q8) Please select the option with the English word for the number 3 below.'
+GENRES_QUESTION = 'Q9) What genre/s of music do you generally like to listen to?'
+PREDICTED_PLAYING_TIME = 'Q10) If you could play music with a computer, how long do ' + \
 	'you think this would entertain you for (i.e. how long do you think ' + \
 	'you would continue playing before getting bored)? Please specify units.'
 
@@ -54,19 +54,47 @@ COMPARED_TO_FRIENDS = "How would you rate playing music with this system, compar
 FILTER_Q_1 = "Please write the word 'music' in the space below."
 FILTER_Q_2 = "Please select option 4 for this question."
 
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.translation import gettext_lazy as _
+
+def validate_non_negative(value):
+	if value < 0:
+		print('hello')
+		raise ValidationError(_('This field cannot be negative.'))
+
+def is_three(value):
+	if value != '3':
+		raise ValidationError(_('Insufficient answer.'))
+
+def says_music(value):
+	if value != 'music' and value != "'music'":
+		raise ValidationError(_('Insufficient answer.'))
+
+def is_four(value):
+	if value != '4':
+		raise ValidationError(_('Insufficient answer.'))
+
 class Participant(models.Model):
 	# Use auto-incremented id as participant id
 	# participant_id = models.AutoField(primary_key=True)
 
 	# Data collected from pre-study questionnaire
-	age = models.IntegerField(default=0)
+	age = models.IntegerField(default=0, validators=[MaxValueValidator(112), MinValueValidator(18)],
+		error_messages={'max_value':'You must enter a valid age in years.',
+			'min_value':'You must be over 18 years of age to participate in this study.'})
 	gender = models.CharField(max_length=6, choices=GENDER_CHOICES, default='o')
 	plays_instruments=models.CharField(choices=YES_NO, max_length=3, default='')
 	instrument_list=models.CharField(max_length=500, default='', blank=True)
 	ability = models.CharField(choices=EXPERTISE_CHOICES, max_length=1, null=True, blank=True)
-	hours_practiced_per_week = models.IntegerField(null=True, blank=True)
-	hours_listening_per_week = models.IntegerField(default=0)
-	select_three = models.CharField(max_length=6, choices=NUMBER_CHOICES, default='o')
+	hours_practiced_per_week = models.IntegerField(null=True, blank=True,
+		validators=[MaxValueValidator(168),MinValueValidator(0)],
+		error_messages={'max_value':'You have entered more hours than there are in a week.',
+			'min_value':'This field cannot be negative.'})
+	hours_listening_per_week = models.IntegerField(validators=[MaxValueValidator(168), MinValueValidator(0)],
+		error_messages={'max_value':'You have entered more hours than there are in a week.',
+			'min_value':'This field cannot be negative.'})
+	select_three = models.CharField(max_length=6, choices=NUMBER_CHOICES, default='o', validators=[is_three])
 	preferred_genres = models.CharField(max_length=500, default='')
 	predicted_playing_time = models.CharField(max_length=100, default='')
 
@@ -77,7 +105,7 @@ class Participant(models.Model):
 	first_system_impression = models.CharField(max_length=500, default='')
 	first_system_good = models.CharField(max_length=500, default='')
 	first_system_bad = models.CharField(max_length=500, default='')
-	filter_q_1 = models.CharField(max_length=20, default='')
+	filter_q_1 = models.CharField(max_length=20, default='', validators=[says_music])
 	first_system_suggestions = models.CharField(max_length=500, default='')
 	first_compared_to_self = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
 	first_compared_to_friends = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
@@ -90,7 +118,7 @@ class Participant(models.Model):
 	second_system_bad = models.CharField(max_length=500, default='')
 	second_system_suggestions = models.CharField(max_length=500, default='')
 	second_compared_to_self = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
-	filter_q_2 = models.CharField(max_length=20, choices=OPTION_CHOICES, default='o')
+	filter_q_2 = models.CharField(max_length=20, choices=OPTION_CHOICES, default='o', validators=[is_four])
 	second_compared_to_friends = models.CharField(max_length=2, choices=COMPARISON_CHOICES, default='')
 
 	system_preferred = models.CharField(max_length=2, default='', choices=SYSTEMS_CHOICES)

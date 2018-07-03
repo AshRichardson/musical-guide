@@ -313,3 +313,7 @@ fieldset.inlineLabels ul {list-style:none}
 	top:25em;
 	left:5em;
 }
+
+#error-message{
+	color:red;
+}
