@@ -12,3 +12,5 @@ It may work with other versions of these, but no guarantees.
 
 ## Notes
 - The audio files have been excluded. To run the server, an audio folder needs to be placed under musicalguide/study/static/study containing mp3 audio files named as 'noteName.mp3'. E.g. 'C4.mp3' for a C4 audio sample, or 'Cs4.mp3' for a C#4 audio sample. Will need audio samples for all notes C3 through B6.
+- Only tested with Google Chrome on Mac and Windows
+- Does not currently work with touchscreen
