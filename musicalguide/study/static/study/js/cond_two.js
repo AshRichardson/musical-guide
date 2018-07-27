@@ -10,14 +10,31 @@ const audioPath = '../../static/study/audio/';
 
 var whiteNoteAudios = [];
 for (var i = 0; i < whiteKeys.length; i++) {
-	whiteNoteAudios.push(new Audio(audioPath + whiteKeys[i] + '.mp3'));
-	whiteNoteAudios[i].load();
+	const index = i;
+	whiteNoteAudios.push(new Audio(audioPath + whiteKeys[index] + '.mp3'));
+	whiteNoteAudios[index].load();
+	whiteNoteAudios[index].volume = 0;
+	whiteNoteAudios[index].play();
+	
+	setTimeout(function() {
+		whiteNoteAudios[index].pause();
+		whiteNoteAudios[index].volume = 1.0;
+		whiteNoteAudios[index].currentTime = 0;
+	}, 150);
 }
 
 var blackNoteAudios = [];
 for (var i = 0; i < blackKeys.length; i++) {
-	blackNoteAudios.push(new Audio(audioPath + blackKeys[i] + '.mp3'));
-	blackNoteAudios[i].load();
+	const index = i;
+	blackNoteAudios.push(new Audio(audioPath + blackKeys[index] + '.mp3'));
+	blackNoteAudios[index].load();
+	blackNoteAudios[index].volume = 0;
+	blackNoteAudios[index].play();
+	setTimeout(function() {
+		blackNoteAudios[index].pause();
+		blackNoteAudios[index].volume = 1.0;
+		blackNoteAudios[index].currentTime = 0;
+	}, 150);
 }
 
 const allKeyArray = whiteKeys.concat(blackKeys);
@@ -34,21 +51,6 @@ var notesOn = {};
 var notesOnPromises = {};
 
 var octaveNum = 4;
-
-// function generate_note(path, params) {
-// 	var form = $('<form></form>');
-// 	form.attr("method", "post");
-// 	form.attr("action", path);
-// 	$.each(params, function(key, val) {
-// 		var field = $('<input></input>');
-// 		field.attr('type', 'hidden');
-// 		field.attr('name', key);
-// 		field.attr('value', value);
-// 		form.append(field);
-// 	});
-// 	$(document.body).append(form);
-// 	form.submit();
-// }
 
 function ai_response(keyColour, index, duration, startTime) {
 	const keyArray = keyColour == 'white' ? whiteKeys : blackKeys;
@@ -73,13 +75,13 @@ function ai_response(keyColour, index, duration, startTime) {
 					const noteName = note[0];
 					const noteStart = note[1];
 					const noteDuration = note[2];
-
 					const thisIndex = keyMap[noteName] > 20 ? keyMap[noteName] - 21 : keyMap[noteName];
 					
 					setTimeout(function() {
 						audioArray[thisIndex].pause();
 						audioArray[thisIndex].load();
 						setTimeout(function() {
+							audioArray[thisIndex].volume = 1.0;
 							audioArray[thisIndex].play();
 							let element = document.querySelectorAll('div.'.concat(noteName))[0];
 							element.style.backgroundColor = 'yellow';
@@ -144,6 +146,7 @@ function note_on(noteDiv) {
 			if (!(keyArray[index] in notesOn)) {
 				audioArray[index].load();
 				setTimeout(function() {
+					audioArray[index].volume = 1.0;
 					notesOnPromises[keyArray[index]] = audioArray[index].play();
 					const now = new Date();
 					notesOn[keyArray[index]] = now.getTime();				
