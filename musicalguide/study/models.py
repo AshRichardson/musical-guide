@@ -2,12 +2,13 @@ from django.db import models
 from django import forms
 from django.forms.widgets import RadioSelect
 import json
+from django.template.loader import render_to_string
 # from django.forms.extras.widgets import SelectDateWidget
 
 # Choice options
 RATING_CHOICES = [('1', '1 (not enjoyable at all)'), ('2', '2'), ('3', '3'), ('4', '4'),
 	('5', '5 (very enjoyable)')]
-GENDER_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
+GENDER_CHOICES = [('P', 'Please choose'), ('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
 AGE = [(0, 18), (1, 19), (2, 20), (3, 21), (4, 22)] # Needs more ages; TODO
 YES_NO = [('y', 'Yes'), ('n', 'No')]
 EXPERTISE_CHOICES = [(None, 'Not applicable'), ('0', 'Beginner'), ('1', 'Intermediate'),
@@ -30,14 +31,14 @@ LIST_INSTRUMENTS_QUESTION = 'Q4) Please list all musical instruments that you ' 
 	'play, with associated number of years of experience.'
 ABILITY_QUESTION = 'Q5) How would you rank your ability to read music?'
 HOURS_PRACTICED = 'Q6) How many hours per week would you say you spend ' + \
-	'practicing playing musical instruments?'
+	'playing musical instruments?'
 HOURS_LISTENED = 'Q7) How many hours per week would you say you spend ' + \
 	'listening to music?'
 SELECT_THREE = 'Q8) Please select the option with the English word for the number 3 below.'
 GENRES_QUESTION = 'Q9) What genre/s of music do you generally like to listen to?'
 PREDICTED_PLAYING_TIME = 'Q10) If you could play music with a computer, how long do ' + \
 	'you think this would entertain you for (i.e. how long do you think ' + \
-	'you would continue playing before getting bored)? Please specify units.'
+	'you would continue playing before getting bored)? Please enter this in the format hh:mm.'
 
 # Questions for the post-study questionnaire
 ESTIMATED_TIME = 'How long do you think you spent playing music with this system?'
@@ -58,6 +59,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
+
 def validate_non_negative(value):
 	if value < 0:
 		print('hello')
@@ -74,6 +76,18 @@ def says_music(value):
 def is_four(value):
 	if value != '4':
 		raise ValidationError(_('Insufficient answer.'))
+
+def valid_time(value):
+	if len(value.split(':')) != 2:
+		raise ValidationError(_('Please enter your answer in the format hh:mm.'))
+	hour, colon, minute = value.partition(':')
+	try:
+		if int(hour.strip()) < 0:
+			raise ValidationError(_('Cannot predict negative hours.'))
+		if int(minute.strip()) < 0:
+			raise ValidationError(_('Cannot predict negative minutes.'))
+	except ValueError:
+		raise ValidationError(_('Please enter your answer in the format hh:mm.'))
 
 class Participant(models.Model):
 	# Use auto-incremented id as participant id
@@ -96,7 +110,7 @@ class Participant(models.Model):
 			'min_value':'This field cannot be negative.'})
 	select_three = models.CharField(max_length=6, choices=NUMBER_CHOICES, default='o', validators=[is_three])
 	preferred_genres = models.CharField(max_length=500, default='')
-	predicted_playing_time = models.CharField(max_length=100, default='')
+	predicted_playing_time = models.CharField(max_length=100, default='', validators=[valid_time])
 
 	# Data collected from post-study questionnaire
 	first_system_estimated_time = models.CharField(max_length=100, default='')
@@ -139,12 +153,13 @@ class PreQuestionnaireForm(forms.ModelForm):
 			'select_three':SELECT_THREE,
 			'preferred_genres':GENRES_QUESTION,
 			'predicted_playing_time':PREDICTED_PLAYING_TIME}
-		widgets = {'plays_instruments': forms.RadioSelect,
+		widgets = {'age': forms.NumberInput,
+			'plays_instruments': forms.RadioSelect,
 			'instrument_list': forms.Textarea(attrs={'width':"100%"}),
 			'ability': forms.RadioSelect,
 			'select_three': forms.RadioSelect,
 			'preferred_genres': forms.Textarea(attrs={'width':"100%"}),
-			'predicted_playing_time': forms.Textarea(attrs={'width':"100%"})}
+			'predicted_playing_time': forms.TimeInput(format='%H:%M')}
 
 class PostQuestionnaireForm(forms.ModelForm):
 	class Meta:
