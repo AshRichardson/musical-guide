@@ -16,7 +16,9 @@ html, body {
 	text-align: justify-all;
 	margin: 0;
 	padding: 0;
-	height: 100%;
+	height: 100;
+	width: 100%;
+	min-height: 100%;
 }
 
 #container {
@@ -226,7 +228,7 @@ fieldset.inlineLabels ul {list-style:none}
 
 .piano-container {
 	margin: 0;
-    max-width: 100%;
+    max-width: 84vw;
     position: relative;
     margin-left: auto;
     margin-right:auto;
@@ -236,10 +238,11 @@ fieldset.inlineLabels ul {list-style:none}
 
 .piano {
 	margin: 0;
-    max-width: 90%;
+    max-width: 84vw;
     position: relative;
     margin-left: auto;
     margin-right:auto;
+    margin-top: 10vw;
     display: block;
     background-color: black;	
 }
@@ -253,16 +256,20 @@ fieldset.inlineLabels ul {list-style:none}
 }
 
 .piano-white {
-    height: 20em;
-    width: 3.75em;
+    /*height: 20em;
+    width: 3.75em;*/
+    height: 40vh;
+    width: 4vw;
     z-index: 1;
     border: 1px solid #bbb;
     background: white;
 }
 
 .piano-black {
-    height: 12em;
-    width: 2.5em;
+    /*height: 12em;
+    width: 2.5em;*/
+    height: 25vh;
+    width: 3vw;
     margin: 0 -2.3em 0 -1.2em;
     z-index: 2;
     border: 1px solid #000;
@@ -310,8 +317,8 @@ fieldset.inlineLabels ul {list-style:none}
 
 .up-down-instruction{
 	position:absolute;
-	top:25em;
-	left:5em;
+	margin-top:25vw;
+	left:8vw;
 }
 
 #error-message{
