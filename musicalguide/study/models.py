@@ -235,13 +235,13 @@ class PostQuestionnaireForm(forms.ModelForm):
 class Note(models.Model):
 	participant = models.ForeignKey(Participant, on_delete=models.CASCADE, default=1)
 	noteName = models.CharField(max_length=3, default='000')
-	startTime = models.IntegerField(default=0)
-	duration = models.IntegerField(default=0)
+	startTime = models.BigIntegerField(default=0)
+	duration = models.BigIntegerField(default=0)
 	interaction = models.CharField(max_length=10, default='echo')
 
 class ComputerNote(models.Model):
 	participant = models.ForeignKey(Participant, on_delete=models.CASCADE, default=1)
 	noteName = models.CharField(max_length=3, default='000')
-	startTime = models.IntegerField(default=0)
-	duration = models.IntegerField(default=0)
+	startTime = models.BigIntegerField(default=0)
+	duration = models.BigIntegerField(default=0)
 	interaction = models.CharField(max_length=10, default='echo')
