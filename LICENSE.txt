@@ -1,0 +1,6 @@
+- Python 3 is licensed under the PSF (Python Software Foundation) license. A copy of this license can be found at https://docs.python.org/3/license.html.
+- Tensorflow and Magenta are both licensed under the Apache 2.0 license. A copy of this license can be found at http://www.apache.org/licenses/LICENSE-2.0.
+- Some code in views.py (relevant code is referenced in the source) is adapted from code in https://github.com/googlecreativelab/aiexperiments-ai-duet. This code is licensed under the Apache 2.0 license. A copy of this license can be found at http://www.apache.org/licenses/LICENSE-2.0.
+- Django is licensed under the Django Trademark License. A copy of this license can be found at https://www.djangoproject.com/trademarks/.
+
+Overall, the licensing requirements of all dependencies are compatible, and do not prevent use of the code for the purposes of this thesis.
