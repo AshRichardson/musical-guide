@@ -11,11 +11,8 @@ This app was built using the following:
 It may work with other versions of these, but no guarantees.
 
 ## Demos (no sound)
-URL to mp4 demo of web app (no sound included):
-https://drive.google.com/file/d/1NziPgLeWwrcIuzI5EGW-GU8V4Qeaz5MB/view?usp=sharing
-
-URL to gif demo of web app (no sound included):
-https://drive.google.com/file/d/1ABW3FUXf38XJKmjoAJAO5BFrA5c-t4kd/view?usp=sharing
+- [URL to mp4 demo of web app (no sound included)](https://drive.google.com/file/d/1NziPgLeWwrcIuzI5EGW-GU8V4Qeaz5MB/view?usp=sharing)
+- [URL to gif demo of web app (no sound included)](https://drive.google.com/file/d/1ABW3FUXf38XJKmjoAJAO5BFrA5c-t4kd/view?usp=sharing)
 
 ## Running the app
 - Install dependencies
@@ -29,3 +26,4 @@ https://drive.google.com/file/d/1ABW3FUXf38XJKmjoAJAO5BFrA5c-t4kd/view?usp=shari
 - The audio files have been excluded. To run the server, an audio folder needs to be placed under musicalguide/study/static/study containing mp3 audio files named as 'noteName.mp3'. E.g. 'C4.mp3' for a C4 audio sample, or 'Cs4.mp3' for a C#4 audio sample. Will need audio samples for all notes C3 through B6.
 - Only tested with Google Chrome on Mac and Windows
 - Does not currently work with touchscreen
+- For information on setting up Django with Postgres, Nginx, and Gunicorn on Ubuntu 16.04 see: [here](https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04)
